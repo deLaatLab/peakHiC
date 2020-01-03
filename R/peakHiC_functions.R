@@ -1467,7 +1467,7 @@ initExampleData <- function(baseFolder, pairixBinary) {
   resultsFolder <- paste0(baseFolder,"RESULTS/")
   dataFolder <- paste0(resultsFolder,"Rao_4DN_GM12878_peakHiC_example/")
   
-  if(!exists(resultsFolder)) {
+  if(!file.exists(resultsFolder)) {
   
     cmd <- paste0("mkdir ",resultsFolder)
     system(cmd)
