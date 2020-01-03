@@ -37,7 +37,7 @@ Another path required to setup is the location of the pairix binary. peakHiC use
 
 Example pairix files for a ~2Mb region on chromosome 1, from the GM12878 HiC dataset published by Rao _et al._ (2014) doi:10.1016/j.cell.2014.11.021 is included to test the peakHiC pipeline. pairix files for other Hi-C datasets are available through the 4DN data portal at https://data.4dnucleome.org/. Run the following commands in the R console to setup peakHiC to use the example data:
 
-```
+```{r source}
 baseFolder <- "/home/geert/localdev/github/peakHiC/"
 pairixBinary <- "/home/geert/localdev/prog/pairix/bin/pairix"
 sourceFile <- paste0(baseFolder,"R/peakHiC_functions.R")
@@ -45,3 +45,14 @@ source(sourceFile)
 initExampleData(baseFolder=baseFolder,pairixBinary)
 ```
 
+## Run the pipeline
+
+Now navigate in a terminal to the peakHiC _RUN_ folder, so in this example **/home/geert/localdev/github/peakHiC/RUN/** and run the following commands:
+
+```
+Rscript createPartitionV4CsByChr.R -chr chr1 -peakHiCObj /home/geert/localdev/github/DATA/example_data/hg38_4DN_Rao_GM12878_peakHiC_example_peakHiCObj.rds
+Rscript callPartitionPeaksbyChr.R -chr chr1 -peakHiCObj /home/geert/localdev/github/DATA/example_data/hg38_4DN_Rao_GM12878_peakHiC_example_peakHiCObj.rds
+Rscript processLoops.R -chr chr1 -peakHiCObj /home/geert/localdev/github/DATA/example_data/hg38_4DN_Rao_GM12878_peakHiC_example_peakHiCObj.rds
+```
+
+This should generate R files with V4C profiles of some example viewpoints and a list of processed loops in **/home/geert/localdev/github/peakHiC/RESULTS/Rao_4DN_GM12878_peakHiC_example/rds/loops/**.
