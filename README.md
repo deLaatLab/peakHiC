@@ -50,9 +50,9 @@ initExampleData(baseFolder=baseFolder,pairixBinary)
 Now navigate in a terminal to the peakHiC _RUN_ folder, so in this example **/home/geert/localdev/github/peakHiC/RUN/** and run the following commands:
 
 ```
-Rscript createPartitionV4CsByChr.R -chr chr1 -peakHiCObj /home/geert/localdev/github/DATA/example_data/hg38_4DN_Rao_GM12878_peakHiC_example_peakHiCObj.rds
-Rscript callPartitionPeaksbyChr.R -chr chr1 -peakHiCObj /home/geert/localdev/github/DATA/example_data/hg38_4DN_Rao_GM12878_peakHiC_example_peakHiCObj.rds
-Rscript processLoops.R -chr chr1 -peakHiCObj /home/geert/localdev/github/DATA/example_data/hg38_4DN_Rao_GM12878_peakHiC_example_peakHiCObj.rds
+Rscript createPartitionV4CsByChr.R -chr chr1 -peakHiCObj /home/geert/localdev/github/peakHiC/DATA/example_data/hg38_4DN_Rao_GM12878_peakHiC_example_peakHiCObj.rds
+Rscript callPartitionPeaksbyChr.R -chr chr1 -peakHiCObj /home/geert/localdev/github/peakHiC/DATA/example_data/hg38_4DN_Rao_GM12878_peakHiC_example_peakHiCObj.rds
+Rscript processLoops.R -chr chr1 -peakHiCObj /home/geert/localdev/github/peakHiC/DATA/example_data/hg38_4DN_Rao_GM12878_peakHiC_example_peakHiCObj.rds
 ```
 
 This should generate R files with V4C profiles of some example viewpoints and a list of processed loops in **/home/geert/localdev/github/peakHiC/RESULTS/Rao_4DN_GM12878_peakHiC_example/rds/loops/**.
