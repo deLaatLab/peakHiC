@@ -14,8 +14,9 @@ Valerio Bianchi, Geert Geeven, Nathan Tucker, Catharina R.E. Hilvering, Amelia W
 - R v3.5+ available from https://www.r-project.org/.
 - The following R packages available from CRAN:
   - argparse
-  - zoo
   - config
+  - zoo
+  - isotone
   - data.table
   - doParallel
 - The following R packages available from Bioconductor:
