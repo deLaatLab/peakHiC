@@ -31,3 +31,8 @@ First choose a folder where to install the pipeline. The R scripts will search f
 git clone https://github.com/deLaatLab/peakHiC.git
 ```
 
+Another path required to setup is the location of the pairix binary. peakHiC uses the 4DN-DCIC tool pairix (see **Prerequisites**) to read HiC data in the pairs format. Below we explain how to configure peakHiC to locate this tool.
+
+## Configure peakHiC to use example data
+
+Example pairix files for a ~2Mb region on chromosome 1, from the GM12878 HiC dataset published by Rao _et al._ (2014) doi:10.1016/j.cell.2014.11.021 is included to test the peakHiC pipeline. pairix files for other Hi-C datasets are available through the 4DN data portal at https://data.4dnucleome.org/.
