@@ -35,4 +35,13 @@ Another path required to setup is the location of the pairix binary. peakHiC use
 
 ## Configure peakHiC to use example data
 
-Example pairix files for a ~2Mb region on chromosome 1, from the GM12878 HiC dataset published by Rao _et al._ (2014) doi:10.1016/j.cell.2014.11.021 is included to test the peakHiC pipeline. pairix files for other Hi-C datasets are available through the 4DN data portal at https://data.4dnucleome.org/.
+Example pairix files for a ~2Mb region on chromosome 1, from the GM12878 HiC dataset published by Rao _et al._ (2014) doi:10.1016/j.cell.2014.11.021 is included to test the peakHiC pipeline. pairix files for other Hi-C datasets are available through the 4DN data portal at https://data.4dnucleome.org/. Run the following commands in the R console to setup peakHiC to use the example data:
+
+```
+baseFolder <- "/home/geert/localdev/github/peakHiC/"
+pairixBinary <- "/home/geert/localdev/prog/pairix/bin/pairix"
+sourceFile <- paste0(baseFolder,"R/peakHiC_functions.R")
+source(sourceFile)
+initExampleData(baseFolder=baseFolder,pairixBinary)
+```
+
