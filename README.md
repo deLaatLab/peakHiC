@@ -17,9 +17,17 @@ Valerio Bianchi, Geert Geeven, Nathan Tucker, Catharina R.E. Hilvering, Amelia W
   - zoo
   - config
   - data.table
+  - doParallel
 - The following R packages available from Bioconductor:
   - GenomicRanges
   - BSgenome of interest (e.g. BSgenome.Hsapiens.UCSC.hg38)
 - The peakC package available from https://github.com/deWitLab/peakC/.
 
+## Installation
+
+First choose a folder where to install the pipeline. The R scripts will search for configuration files, HiC data and results relative to this _baseFolder_ of install of peakHiC so it is important to remember this path and set peakHiC up correctly to use it. Here we will use **/home/geert/localdev/github/** as folder where to clone the github repository. After navigating to this folder, we can clone the peakHiC repository using the following command:
+
+```
+git clone https://github.com/deLaatLab/peakHiC.git
+```
 
