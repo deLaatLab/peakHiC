@@ -1451,3 +1451,29 @@ getV4CStatsByChr <- function(chr,peakHiCObj,hicCond=NULL,outFile=NULL) {
   
 }
 
+initExampleData <- function(baseFolder, pairixBinary) {
+
+  fRDS <- paste0(baseFolder,"DATA/example_data/hg38_4DN_Rao_GM12878_peakHiC_example_peakHiCObj.rds")
+  
+  peakHiCObj <- readRDS(fRDS)
+  peakHiCObj$configOpt$baseFolder <- baseFolder
+  peakHiCObj$configOpt$pairixBinary <- pairixBinary
+  peakHiCObj$configOpt$peakHiCObj <- paste0(baseFolder,"DATA/example_data/hg38_4DN_Rao_GM12878_peakHiC_example_peakHiCObj.rds")
+  peakHiCObj$configOpt$projectFolder <- paste0(baseFolder,"RESULTS/Rao_4DN_GM12878_peakHiC_example/")
+  peakHiCObj$configOpt$hicReadsFldr <- paste0(baseFolder,"DATA/example_data/")
+  peakHiCObj$configOpt$fragsFile <- paste0(baseFolder,"DATA/hg38_MboI_fragsByChr.rds")
+  saveRDS(peakHiCObj,file=peakHiCObj$configOpt$peakHiCObj)
+  
+  resultsFolder <- paste0(baseFolder,"RESULTS/")
+  dataFolder <- paste0(resultsFolder,"Rao_4DN_GM12878_peakHiC_example/")
+  
+  if(!exists(resultsFolder)) {
+  
+    cmd <- paste0("mkdir ",resultsFolder)
+    system(cmd)
+    cmd <- paste0("mkdir ",dataFolder)
+    system(cmd)
+    
+  }
+
+}
