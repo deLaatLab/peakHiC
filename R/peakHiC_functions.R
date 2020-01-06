@@ -1220,6 +1220,50 @@ createFrags <- function(configOpt,writeToRDS=FALSE) {
 
 }
 
+createPartitionGR <- function(frags,partSize=8e6) {
+  
+  chrs <- names(frags)
+  
+  for(i in 1:length(chrs)) {
+    
+    chr <- chrs[i]
+    
+    S1 <- start(reduce(frags[[chr]]))
+    E1 <- end(reduce(frags[[chr]]))
+    
+    S2 <- S1+floor(partSize/2)
+    
+    IRS1 <- seq(from=S1,to=E1-partSize,by=partSize)
+    N <- length(IRS1)
+    IRE1 <- c(IRS1[2:N]-1,E1)
+    
+    gR1 <- GRanges(chr,IRanges(IRS1,IRE1))
+    
+    IRS2 <- seq(from=S2,to=E1-partSize-floor(partSize/2),by=partSize)
+    N <- length(IRS2)
+    IRE2 <- c(IRS2[2:N]-1,E1-floor(partSize/2))
+    gR2 <- GRanges(chr,IRanges(IRS2,IRE2))
+    
+    partGRchr <- sort(c(gR1,gR2))
+    
+    if(chr=="chr1") {
+      
+      partGR <- partGRchr
+      
+    } else {
+      
+      partGR <- suppressWarnings(c(partGR,partGRchr))
+      
+    }
+    
+  }
+  
+  partGR$partID <- paste0("part.",1:length(partGR))
+  
+  return(partGR)
+  
+}
+
 getRecipPeaks <- function(peakHiCObj,anchorSize=10e3,vpSize=10e3,loopDF=NULL,loopFile=NULL) {
   
   vpsGR <- peakHiCObj$vpsGR
