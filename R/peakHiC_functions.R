@@ -686,7 +686,26 @@ subChr <- function(gR,chr) {
 readHiCDesign <- function(designFile) {
   
   designDF <- read.table(designFile,stringsAsFactors=FALSE,header=TRUE)
-  return(designDF)
+  cols <- colnames(designDF)
+  
+  if(length(cols)==3) {
+    if(sum(colnames(designDF)==c("HiCMap","repID","trackID"))){
+      
+      return(designDF)  
+    
+    } else {
+      
+      message("HiC design matrix should contain 3 columns named HiCMap, repID and trackID")
+      return(NULL)
+      
+    }
+    
+  } else {
+    
+    message("HiC design matrix should contain 3 columns named HiCMap, repID and trackID")
+    return(NULL)
+    
+  }
   
 }
 
