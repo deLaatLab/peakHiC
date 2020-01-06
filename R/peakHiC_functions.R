@@ -683,6 +683,13 @@ subChr <- function(gR,chr) {
   
 }
 
+readHiCDesign <- function(designFile) {
+  
+  designDF <- read.table(designFile,stringsAsFactors=FALSE,header=TRUE)
+  return(designDF)
+  
+}
+
 cpet <- function(i,Sq1,Sq2){return(length(intersect(Sq1[[i]],Sq2[[i]])))}
 
 tagRegions <- function(PE1,PE2,qR1,qR2) {
