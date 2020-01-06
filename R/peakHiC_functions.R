@@ -1174,6 +1174,52 @@ createVPs <- function(vpData, peakHiCObj, fragsFile=NULL) {
   
 }
 
+createFrags <- function(configOpt,writeToRDS=FALSE) {
+  
+  frags <- list()
+  
+  BSname <- strsplit(configOpt$BSgenome,split=" ")[[1]][[2]]
+  
+  do.call(require,args=list(BSname))
+  assign( 'BScurrent', base::get( BSname ) )
+  
+  REmotif <- strsplit(configOpt$RE,split=" ")[[1]][[2]]
+
+  chrs <- getChrs(BSname=BSname)
+  sLengths <- getChrSeqlengths(BSname)
+  
+  fragCounter <- 0
+  
+  for(i in 1:length(chrs)) {
+  
+    chr <- chrs[i]
+  
+    fragRanges <- ranges(matchPattern(patter=REmotif,subject=BScurrent[[chr]]))
+    chrGR <- resize(GRanges(seqnames=chr,ranges=fragRanges),width=1,fix="end")
+  
+    N <- length(chrGR)
+    start(chrGR)[1] <- 1
+    end(chrGR)[N] <- sLengths[chr]+1
+    start(chrGR)[2:N] <- end(chrGR)[1:(N-1)]+1
+  
+    chrGR$fragID <- (1:N)+fragCounter
+    frags[[chr]] <- chrGR
+  
+    fragCounter <- fragCounter+N
+  
+  }
+  
+  if(writeToRDS) {
+    
+    saveRDS(frags,file=configOpt$fragsFile)
+    
+  } else {
+    
+    return(frags)
+  }
+
+}
+
 getRecipPeaks <- function(peakHiCObj,anchorSize=10e3,vpSize=10e3,loopDF=NULL,loopFile=NULL) {
   
   vpsGR <- peakHiCObj$vpsGR
@@ -1246,7 +1292,7 @@ binGenome <- function(BSgenome,binSize=10e3){
 
 getInsuBins <- function(peakHiCObj,binRes=2e3,scaleParam=200e3){
   
-  BSgenome <- as.vector(peakHiCObj$configOpt$genome)
+  BSgenome <- as.vector(strsplit(peakHiCObj$configOpt$BSgenome,split=" ")[[1]][[2]])
   
   do.call( require, args=list( BSgenome ) )
   assign( 'genome', base::get(as.vector(BSgenome)))
