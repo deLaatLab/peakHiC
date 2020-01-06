@@ -1,0 +1,50 @@
+default:
+ baseFolder: /home/geert/localdev/github/peakHiC/
+ pairixBinary: /home/geert/localdev/prog/pairix/bin/pairix
+ projectFolder: /home/geert/localdev/github/peakHiC/RESULTS/Rao_4DN_GM12878_peakHiC_example/
+ hicReadsFldr: /home/geert/localdev/github/peakHiC/DATA/example_data/
+ fragsFile: /home/geert/localdev/github/peakHiC/DATA/hg38_MboI_fragsByChr.rds
+ genomeObj: /home/geert/localdev/github/peakHiC/DATA/example_data/hg38_4DN_Rao_GM12878_peakHiC_example_peakHiCObj.rds
+ normalizeFactor: 1000
+ hicCond: "Rao_4DN_GM12878"
+
+ enzymes:
+  -
+    DpnII
+    GATC
+  -
+    MboI
+    GATC
+  -
+    NlaIII
+    CATG
+ 
+ genomes:
+  -
+    mm9
+    BSgenome.Mmusculus.UCSC.mm9
+  -
+    mm10
+    BSgenome.Mmusculus.UCSC.mm10
+  -
+    hg19
+    BSgenome.Hsapiens.UCSC.hg19
+  -
+    hg38
+    BSgenome.Hsapiens.UCSC.hg38
+    
+ peakCalls:
+  wSize: 31
+  qWr: 1.2
+  alphaFDR: 0.05
+  minDist: 30000
+
+ V4C:
+  vpSize: 31
+  wSize: 31
+  v4cSize: 1200000
+  maxY: 25
+  plotView: 1200000
+  xaxisUnit: 'Mb'
+  plotType: 'PDF'
+  binSize: 25000
