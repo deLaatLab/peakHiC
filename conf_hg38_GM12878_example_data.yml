@@ -19,7 +19,7 @@ default:
     BSgenome.Hsapiens.UCSC.hg38
  
  genomePartition:
-  partitionGR: NULL
+  partitionGR: /home/geert/localdev/github/peakHiC/DATA/hg38_BSgenome.Hsapiens.UCSC.hg38_partGR.rds
 
  peakCalls:
   wSize: 31
