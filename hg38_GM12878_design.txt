@@ -1,0 +1,10 @@
+HiCMap	repID	trackID
+Rao_4DN_GM12878	R1	gm_rep1
+Rao_4DN_GM12878	R2	gm_rep2
+Rao_4DN_GM12878	R3	gm_rep3
+Rao_4DN_GM12878	R4	gm_rep4
+Rao_4DN_GM12878	R5	gm_rep5
+Rao_4DN_GM12878	R6	gm_rep6
+Rao_4DN_GM12878	R7	gm_rep7
+Rao_4DN_GM12878	R8	gm_rep8
+Rao_4DN_GM12878	R9	gm_rep9
