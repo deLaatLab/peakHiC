@@ -1077,6 +1077,23 @@ createConfig <- function(confFile) {
   
 }
 
+getChrs <- function(BSname) {
+  
+  do.call(require,args=list(BSname))
+  assign( 'BScurrent', base::get( BSname ) )
+  allSeqs <- seqnames(BScurrent)
+  
+  Un <- grep("Un",allSeqs)
+  Alt <- grep("_alt",allSeqs)
+  Rand <- grep("_random",allSeqs)
+  Mit <- grep("chrM",allSeqs)
+  
+  chrs <- allSeqs[setdiff(1:length(allSeqs),c(Un,Alt,Rand,Mit))]
+  
+  return(chrs)
+  
+}
+
 createVPs <- function(vpData, peakHiCObj, fragsFile=NULL) {
   
   if(is.null(fragsFile)) {
