@@ -689,6 +689,7 @@ readHiCDesign <- function(designFile) {
   cols <- colnames(designDF)
   
   if(length(cols)==3) {
+    
     if(sum(colnames(designDF)==c("HiCMap","repID","trackID"))){
       
       return(designDF)  
