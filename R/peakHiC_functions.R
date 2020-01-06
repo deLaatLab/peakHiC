@@ -1504,3 +1504,29 @@ initExampleData <- function(baseFolder, pairixBinary) {
   }
 
 }
+
+peakHiCConf <- function(confFile){
+
+  configOpt <- createConfig(confFile=confFile)
+  designDF <- readHiCDesign(designFile=configOpt$hic$designFile)
+  partGR <- readRDS(configOpt$genomePartition$partitionGR)
+  
+  peakHiCObj <- list()
+  peakHiCObj$hic <- list()
+  peakHiCObj$partition <- list()
+  peakHiCObj$vpsGR <- NULL
+  peakHiCObj$configOpt <- configOpt
+  peakHiCObj$name <- configOpt$name
+  peakHiCObj$hic$design <- designDF
+  peakHiCObj$partition$partGR <- partGR
+  
+  vpData <- read.table(configOpt$VPsFile,sep="\t",stringsAsFactors=FALSE,header=TRUE)
+  peakHiCObj$vpsGR <- createVPs(vpData=vpData,peakHiCObj=peakHiCObj,fragsFile=peakHiCObj$configOpt$fragsFile)
+  
+  saveRDS(peakHiCObj,file=peakHiCObj$configOpt$peakHiCObj)
+  
+  message("PeakHiC configuration was read and results were stored in this RDS file :")
+  message(peakHiCObj$configOpt$peakHiCObj)
+  
+}
+
