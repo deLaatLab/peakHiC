@@ -8,31 +8,19 @@ default:
  normalizeFactor: 1000
  hicCond: "Rao_4DN_GM12878"
 
- enzymes:
-  -
-    DpnII
-    GATC
+ RE:
   -
     MboI
     GATC
-  -
-    NlaIII
-    CATG
- 
- genomes:
-  -
-    mm9
-    BSgenome.Mmusculus.UCSC.mm9
-  -
-    mm10
-    BSgenome.Mmusculus.UCSC.mm10
-  -
-    hg19
-    BSgenome.Hsapiens.UCSC.hg19
+
+ BSgenome:
   -
     hg38
     BSgenome.Hsapiens.UCSC.hg38
-    
+ 
+ genomePartition:
+  partitionGR: NULL
+
  peakCalls:
   wSize: 31
   qWr: 1.2
@@ -48,3 +36,6 @@ default:
   xaxisUnit: 'Mb'
   plotType: 'PDF'
   binSize: 25000
+ 
+ hic:
+  design: /home/geert/localdev/github/peakHiC/hg38_GM12878_design.txt
