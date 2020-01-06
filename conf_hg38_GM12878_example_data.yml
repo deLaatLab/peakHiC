@@ -40,4 +40,4 @@ default:
   binSize: 25000
  
  hic:
-  designFile: /home/geert/localdev/github/peakHiC/hg38_GM12878_design.txt
+  designFile: /home/geert/localdev/github/peakHiC/DATA/hg38_GM12878_design.txt
