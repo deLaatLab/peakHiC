@@ -104,6 +104,12 @@ ids <- unique(subChr(vpsGR,chr)$partID)
 
 rdsFldr <- paste0(peakHiCObj$configOpt$projectFolder,"rds/")
 
+if(!file.exists(rdsFldr)) {
+  
+  dir.create(rdsFldr)
+  
+}
+
 for(i in 1:length(ids)) {
 
 	partID <- ids[i]
