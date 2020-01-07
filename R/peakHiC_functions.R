@@ -338,7 +338,7 @@ getPartitionPeaks <- function(partID, peakHiCObj, configOpt=NULL, hicCond=NULL, 
   }
   
   if(is.null(nReps)) {
-    nReps <- sum(as.vector(peakHiCObj[["hic"]][["design"]][["condID"]])==hicCond)
+    nReps <- sum(as.vector(peakHiCObj[["hic"]][["design"]][["HiCMap"]])==hicCond)
   }
   
   if(is.null(wSize)){
@@ -639,7 +639,7 @@ getPeakHiCData <- function(partID,frags,peakHiCObj,configOpt=NULL,hicCond=NULL,w
   }
   
   designMat <- peakHiCObj[["hic"]][["design"]]
-  hicTracksByCondition <- split(as.vector(designMat$trackID),designMat$condID)
+  hicTracksByCondition <- split(as.vector(designMat$trackID),designMat$HiCMap)
   
   vps <- getVPs(partID,peakHiCObj)
   vpReads <- list()
@@ -777,7 +777,7 @@ getLoopCovbyPartition <- function(partID,loops,peakHiCObj,configOpt=NULL,hicCond
   if(sum(!c("loopID","id")%in%cNames)){stop(paste0("loop data.frame must have loopID (identifier of loop) and id (identifier of viewpoint) columns"))}
   
   designMat <- peakHiCObj[["hic"]][["design"]]
-  hicTracksByCondition <- split(as.vector(designMat$trackID),designMat$condID)
+  hicTracksByCondition <- split(as.vector(designMat$trackID),designMat$HiCMap)
   tracks <- hicTracksByCondition[[hicCond]]
   
   nReps <- length(tracks)
@@ -895,7 +895,7 @@ getTADCovbyPartition <- function(partID,loops,peakHiCObj,hicCond="Rao_4DN_GM1287
   if(is.null(loops$loopID)|is.null(loops$id)){stop(paste0("loop data.frame must have loopID (identifier of loop) and id (identifier of viewpoint) columns"))}
   
   designMat <- peakHiCObj[["hic"]][["design"]]
-  hicTracksByCondition <- split(as.vector(designMat$trackID),designMat$condID)
+  hicTracksByCondition <- split(as.vector(designMat$trackID),designMat$HiCMap)
   
   vps <- getVPs(partID,peakHiCObj)$vpID
   partLoops <- loops[loops$id%in%vps,]
@@ -1278,7 +1278,7 @@ getRecipPeaks <- function(peakHiCObj,anchorSize=10e3,vpSize=10e3,loopDF=NULL,loo
       
       rdsFldr <- paste0(peakHiCObj$configOpt$projectFolder,"rds/")
       loopsFldr <- paste0(rdsFldr,"loops/")
-      nReps <- sum(as.vector(peakHiCObj[["hic"]][["design"]][["condID"]])==peakHiCObj$configOpt$hicCond)
+      nReps <- sum(as.vector(peakHiCObj[["hic"]][["design"]][["HiCMap"]])==peakHiCObj$configOpt$hicCond)
       
       loopFile <- paste0(loopsFldr,peakHiCObj$name,"_GW_nReps_",nReps,"_peakHiC_wSize_",peakHiCObj$configOpt$peakCalls$wSize,"_qWr_",peakHiCObj$configOpt$peakCalls$qWr,"_alphaFDR_",peakHiCObj$configOpt$peakCalls$alphaFDR,"_loops.txt")
       
