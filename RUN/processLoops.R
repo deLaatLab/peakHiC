@@ -113,6 +113,10 @@ loopCovs <- loopCovs[,keepCols]
 
 loopDF <- getRecipPeaks(peakHiCObj=peakHiCObj,anchorSize=anchorSize,vpSize=10e3,loopDF=loopCovs)$recipLoops
 
+BSname <- strsplit(peakHiCObj$configOpt$BSgenome,split=" ")[[1]][2]
+binGR <- binGenome(BSgenome=BSname,binSize=10e3)
+loopDF <- getBinPairs(loops=loopDF,bins=binGR,anchorSize=10e3)
+
 outFile <- paste0(loopsFldr,peakHiCObj$name,"_GW_nReps_",nReps,"_peakHiC_wSize_",peakHiCObj$configOpt$peakCalls$wSize,"_qWr_",peakHiCObj$configOpt$peakCalls$qWr,"_alphaFDR_",peakHiCObj$configOpt$peakCalls$alphaFDR,"_processed_loops.txt")
 write.table(loopDF,file=outFile,sep="\t",row.names=FALSE,quote=FALSE)
 
