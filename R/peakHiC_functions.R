@@ -1654,3 +1654,68 @@ peakHiCConf <- function(confFile){
   
 }
 
+exportLoops <- function(peakHiCObj,loopFile=NULL,makeNR=TRUE) {
+  
+  if(is.null(loopFile)) {
+    
+    rdsFldr <- paste0(peakHiCObj$configOpt$projectFolder,"rds/")
+    loopsFldr <- paste0(rdsFldr,"loops/")
+    wSize <- peakHiCObj$configOpt$peakCalls$wSize
+    alphaFDR <- peakHiCObj$configOpt$peakCalls$alphaFDR
+    qWr <- peakHiCObj$configOpt$peakCalls$qWr
+    nReps <- nrow(peakHiCObj$hic$design)
+    loopFile <- paste0(loopsFldr,peakHiCObj$name,"_GW_nReps_",nReps,"_peakHiC_wSize_",wSize,"_qWr_",qWr,"_alphaFDR_",alphaFDR,"_processed_loops.txt")
+    
+  }
+  
+  if(!file.exists(loopFile)) {
+    
+    stop("loopFile does not exist")
+    
+  }
+  
+  loopDF <- read.table(loopFile,header=TRUE,stringsAsFactors=FALSE)
+  
+  writeHICCUPs2D <- function(lx,ly,outFile,clr=NULL,width=NULL) {
+    
+    labs <- c("chr1","x1","x2","chr2","y1","y2","color")
+    
+    if(!is.null(width)) {
+      
+      lx <- resize(lx,width=width,fix="center")
+      ly <- resize(ly,width=width,fix="center")
+      
+    } 
+    
+    out <- cbind(as.data.frame(lx)[,1:3],as.data.frame(ly)[,1:3])
+    
+    if(is.null(clr)) {
+      
+      out$color <- rep("0,255,255",nrow(out))
+      
+    } else {
+      
+      out$color <- rep(clr,nrow(out))
+      
+    }
+    
+    colnames(out) <- labs
+    
+    write.table(out,file=outFile,sep="\t",row.names=F,quote=F)
+    
+  }
+  
+  if(!is.null(loopDF$NR.binID) & makeNR) {
+    
+    loopDF <- loopDF[order(loopDF[[paste0(peakHiCObj$configOpt$hicCond,".covQ.norm")]],decreasing=TRUE),]
+    loopDF <- loopDF[!duplicated(as.vector(loopDF$NR.binID)),]
+    lxPos <- pmin(loopDF$vp_X1,loopDF$maxV4CscorePos)
+    lyPos <- pmax(loopDF$vp_X1,loopDF$maxV4CscorePos)
+    lx <- GRanges(loopDF$chr,IRanges(lxPos-5e3+1,lxPos+5e3))
+    ly <- GRanges(loopDF$chr,IRanges(lyPos-5e3+1,lyPos+5e3))
+    hiccupsFile <- paste0(loopsFldr,peakHiCObj$name,"_GW_nReps_",nReps,"_peakHiC_wSize_",wSize,"_qWr_",qWr,"_alphaFDR_",alphaFDR,"_loops_HICCUPS_format.txt")
+    writeHICCUPs2D(lx=lx,ly=ly,outFile=hiccupsFile)
+    
+  }
+  
+}
