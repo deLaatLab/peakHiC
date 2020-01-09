@@ -46,6 +46,8 @@ source(sourceFile)
 initExampleData(baseFolder=baseFolder,pairixBinary)
 ```
 
+Please be aware that you need to update the paths in the R code above to point to files and folders on your local machine.
+
 ## Run the pipeline
 
 Now navigate in a terminal to the peakHiC _RUN_ folder, so in this example **/home/geert/localdev/github/peakHiC/RUN/** and run the following commands:
