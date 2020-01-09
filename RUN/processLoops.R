@@ -120,6 +120,8 @@ loopDF <- getBinPairs(loops=loopDF,bins=binGR,anchorSize=10e3)
 outFile <- paste0(loopsFldr,peakHiCObj$name,"_GW_nReps_",nReps,"_peakHiC_wSize_",peakHiCObj$configOpt$peakCalls$wSize,"_qWr_",peakHiCObj$configOpt$peakCalls$qWr,"_alphaFDR_",peakHiCObj$configOpt$peakCalls$alphaFDR,"_processed_loops.txt")
 write.table(loopDF,file=outFile,sep="\t",row.names=FALSE,quote=FALSE)
 
+exportLoops(peakHiCObj=peakHiCObj)
+
 message( paste0( '>>>> DONE <<<<' ) )
 
 q("no")
