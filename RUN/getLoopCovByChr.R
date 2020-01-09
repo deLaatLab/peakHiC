@@ -55,7 +55,7 @@ peakHiCObj <- readRDS(peakHiCObjFile)
 hicCond <- peakHiCObj$configOpt$hicCond
 
 designMat <- peakHiCObj[["hic"]][["design"]]
-hicTracksByCondition <- split(as.vector(designMat$trackID),designMat$condID)
+hicTracksByCondition <- split(as.vector(designMat$trackID),designMat$HiCMap)
 tracks <- hicTracksByCondition[[hicCond]]
 
 nReps <- length(tracks)
