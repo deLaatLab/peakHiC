@@ -28,12 +28,23 @@ in the R console. To add your own viewpoints, you need to create a txt file whic
 * Viewpoint file
   * peakHiC viewpoints are organized in a viewpoint file. Columns in this file specify the genomic coordinates of each viewpoint (row in the file). Additionally we need to specify a unique vpID, a name and a type (e.g. TSS, CTCF site) : 
 
-| chr   | vpPos     | vpID              | name              | type | partID   | fragID  | 
-|-------|-----------|-------------------|-------------------|------|----------|---------|
-| chr1  | 42846618  | CTCF_ENCODE_14013 | CTCF_ENCODE_14013 | CTCF | part.11  | 120531  |
-| chr1  | 42931204  | CTCF_ENCODE_25928 | CTCF_ENCODE_25928 | CTCF | part.11  | 120766  |
-
+| chr   | vpPos     | vpID              | name              | type |
+|-------|-----------|-------------------|-------------------|------|
+| chr1  | 42846618  | CTCF_ENCODE_14013 | CTCF_ENCODE_14013 | CTCF |
+| chr1  | 42931204  | CTCF_ENCODE_25928 | CTCF_ENCODE_25928 | CTCF |
 
 **Table 1.** Example of a peakHiC viewpoint file which defines genomic loci from which V4C profiles will be created.
 
+The R code below will read this file and replace the vpsGR object in peakHiCObj, so that these viewpoints can be analyzed. Based on the genomic partition and restriction fragments defined in the peakHiC object, the __creatVPs__ function will assign a partID and fragID to each viewpoint. 
+
+```{r source}
+exampleVPs <- paste0(baseFolder,"DATA/example_data/hg38_4DN_Rao_GM12878_peakHiC_example_VPs.txt")
+vpData <- read.table(exampleVPs,header=TRUE,stringsAsFactors=FALSE)
+peakHiCObj$vpsGR <- createVPs(vpData=vpData,peakHiCObj=peakHiCObj)
+```
+
+Below is a screenshot where we loaded the exported BigWig tracks for 2 example VPs into the IGV browser.
+
 ![peakHiC BigWig track in IGV](https://github.com/deLaatLab/peakHiC/raw/master/tutorial/peakHiC_example_igv_snapshot.png)
+
+**Figure 1.** Visualization of peakHiC BigWig tracks containing V4C profiles from 2 example viewpoints
