@@ -17,4 +17,23 @@ objFile <- paste0(baseFolder,"DATA/example_data/hg38_4DN_Rao_GM12878_peakHiC_exa
 peakHiCObj <- readRDS(objFile)
 ```
 
+Viewpoints can be defined from any locus of interest in the genome. The example data contains 181 viewpoints from gene promoters (TSS), CTCF bound site in GM12878 (ENCODE ChIP-Seq data) and sites with enrichment for H3K27ac in GM12878. For the example data, these viewpoints are already stored in a GenomicRanges object. You can view them by typing
+
+```{r source}
+peakHiCObj$vpsGR
+```
+
+in the R console. To add your own viewpoints, you need to create a txt file which defines them. 
+
+* Viewpoint file
+  * peakHiC viewpoints are organized in a viewpoint file. Columns in this file specify the genomic coordinates of each viewpoint (row in the file). Additionally we need to specify a unique vpID, a name and a type (e.g. TSS, CTCF site) : 
+
+| chr   | vpPos     | vpID              | name              | type | partID   | fragID  | 
+|-------|-----------|-------------------|-------------------|------|----------|---------|
+| chr1  | 42846618  | CTCF_ENCODE_14013 | CTCF_ENCODE_14013 | CTCF | part.11  | 120531  |
+| chr1  | 42931204  | CTCF_ENCODE_25928 | CTCF_ENCODE_25928 | CTCF | part.11  | 120766  |
+
+
+**Table 1.** Example of a peakHiC viewpoint file which defines genomic loci from which V4C profiles will be created.
+
 ![peakHiC BigWig track in IGV](https://github.com/deLaatLab/peakHiC/raw/master/tutorial/peakHiC_example_igv_snapshot.png)
