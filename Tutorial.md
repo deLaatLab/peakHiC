@@ -54,9 +54,18 @@ This will prompt R to open a display with the resulting plot, which should look 
 
 ![peakHiC BigWig track in IGV](https://github.com/deLaatLab/peakHiC/raw/master/tutorial/peakHiC_example_v4cPlot_R_CTCF_ENCODE_25928.png)
 
-We can also export the peakHiC V4C tracks as BigWig tracks, which can be added to a trackHub for visualization in the UCSC browser or we can directly load them into IGV. 
-Below is a screenshot where we loaded the exported BigWig tracks for 2 example VPs into the IGV browser.
+**Figure 1.** Visualization of peakHiC V4C profile interactively in an R session
+
+We can also export the peakHiC V4C tracks as BigWig tracks, which can be added to a trackHub for visualization in the UCSC browser or we can directly load them into IGV. You first need to specify a folder to write the tracks to. Make sure this folder exists and you have permission to write files to it. The code below will export 2 example tracks to this folder.
+
+```{r source}
+trackFldr <- "/home/geert/localdev/github/peakHiC/RESULTS/Rao_4DN_GM12878_peakHiC_example/TRACKS/"
+exportV4Cbw(vpID="CTCF_ENCODE_14013",peakHiCObj=peakHiCObj,trackFldr=trackFldr)
+exportV4Cbw(vpID="CTCF_ENCODE_25928",peakHiCObj=peakHiCObj,trackFldr=trackFldr)
+```
+
+These tracks are ready to be imported into UCSC or the IGV genome browser. Below is a screenshot where we loaded the exported BigWig tracks into the IGV browser.
 
 ![peakHiC BigWig track in IGV](https://github.com/deLaatLab/peakHiC/raw/master/tutorial/peakHiC_example_igv_snapshot.png)
 
-**Figure 1.** Visualization of peakHiC BigWig tracks containing V4C profiles from 2 example viewpoints
+**Figure 2.** Visualization of peakHiC BigWig tracks containing V4C profiles from 2 example viewpoints
