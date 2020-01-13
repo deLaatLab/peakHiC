@@ -69,3 +69,16 @@ These tracks are ready to be imported into UCSC or the IGV genome browser. Below
 ![peakHiC BigWig track in IGV](https://github.com/deLaatLab/peakHiC/raw/master/tutorial/peakHiC_example_igv_snapshot.png)
 
 **Figure 2.** Visualization of peakHiC BigWig tracks containing V4C profiles from 2 example viewpoints
+
+peakHiC loops can also be exported to files / tracks that are compatible with either UCSC or the JuiceBox tool, which is a popular tool for the visualization of Hi-C data. Remember that a plain txt file describing all the loops is already present after running the peakHiC pipeline, which can be further studied with R for instance. To export peakHiC the loops, we choose a PATH (folder) and preFix so that the resulting UCSC Interact BED file and the file with loops in HICCUPS format will be written there.
+
+```{r source}
+exportLoops(peakHiCObj,outFilePrefix="/home/geert/localdev/github/peakHiC/RESULTS/Rao_4DN_GM12878_peakHiC_example/rds/loops/peakHiC_example")
+```
+
+Below is a screenshot of the exported file __peakHiC_example_HICCUPS_format.txt__ . To obtain this, we downloaded the hg38 assembly version of the GM12878 Hi-C data in juicer (.hic) format from the 4DN, loaded it into Juicebox and used the .
+
+![peakHiC BigWig track in IGV](https://github.com/deLaatLab/peakHiC/raw/master/tutorial/peakHiC_example_Juicebox_snapshot.png)
+
+**Figure 3.** Visualization of peakHiC loops in JuiceBox on top of the GM12878 Hi-C map (hg38)
+
