@@ -181,7 +181,7 @@ getV4CData <- function(vpID,peakHiCObj,configOpt=NULL,wSize=21,alphaFDR=0.1,qWr=
   
 }
 
-v4cPlot <- function(vpID,peakHiCObj,genesGR=NULL,loopDF=NULL,loopFile=NULL,ylimRanges=c(0.4,0.6),xdiv=1e6,...){
+v4cPlot <- function(vpID,peakHiCObj,genesGR=NULL,loopDF=NULL,loopFile=NULL,ylimRanges=c(0.4,0.8),xdiv=1e6,...){
 
   pDat <- getV4CData(vpID=vpID,peakHiCObj=peakHiCObj)
   plot(x=pDat$pos/xdiv,y=pDat$normV4C,type="h",frame.plot=FALSE,ylab="V4C",xlab="pos (Mb)",...)
@@ -195,7 +195,7 @@ v4cPlot <- function(vpID,peakHiCObj,genesGR=NULL,loopDF=NULL,loopFile=NULL,ylimR
   
 }
 
-addLoops <- function(peakHiCObj,overlapGRs,loopDF=NULL,loopFile=NULL,xdiv=1e6,clr="darkgray",ylimCurrent=NULL,ylimRanges=c(0.4,0.6)){
+addLoops <- function(peakHiCObj,overlapGRs,loopDF=NULL,loopFile=NULL,xdiv=1e6,clr="darkgray",ylimCurrent=NULL,ylimRanges=c(0.4,0.8)){
   
   if(is.null(ylimCurrent)) {
     
