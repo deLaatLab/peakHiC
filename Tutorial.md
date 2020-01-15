@@ -72,10 +72,6 @@ v4cPlot(vpID=ids[2],peakHiCObj=peakHiCObj,showLoops=TRUE,overlapGRs=overlapGRs,x
 
 **Figure 2.** Visualization of V4C profiles of 2 example CTCF viewpoints together with peakHiC loops
 
-loopFile <- "/home/geert/localdev/github/peakHiC/RESULTS/Rao_4DN_GM12878_peakHiC_example/rds/loops/hg38_4DN_Rao_GM12878_peakHiC_example_GW_nReps_9_peakHiC_wSize_31_qWr_1.2_alphaFDR_0.05_processed_loops.txt"
-loopDF <- read.table(file=loopFile,sep="\t",header=TRUE,stringsAsFactors=FALSE)
-
-
 We can also export the peakHiC V4C tracks as BigWig tracks, which can be added to a trackHub for visualization in the UCSC browser or we can directly load them into IGV. You first need to specify a folder to write the tracks to. Make sure this folder exists and you have permission to write files to it. The code below will export 2 example tracks to this folder.
 
 ```{r source}
@@ -88,7 +84,7 @@ These tracks are ready to be imported into UCSC or the IGV genome browser. Below
 
 ![peakHiC BigWig track in IGV](https://github.com/deLaatLab/peakHiC/raw/master/tutorial/peakHiC_example_igv_snapshot.png)
 
-**Figure 2.** Visualization of peakHiC BigWig tracks containing V4C profiles from 2 example viewpoints
+**Figure 3.** Visualization of peakHiC BigWig tracks containing V4C profiles from 2 example viewpoints
 
 peakHiC loops can also be exported to files / tracks that are compatible with either UCSC or the JuiceBox tool, which is a popular tool for the visualization of Hi-C data. Remember that a plain txt file describing all the loops is already present after running the peakHiC pipeline, which can be further studied with R for instance. To export peakHiC the loops, we choose a PATH (folder) and preFix so that the resulting UCSC Interact BED file and the file with loops in HICCUPS format will be written there.
 
@@ -100,5 +96,5 @@ Below is a screenshot of the exported file __peakHiC_example_HICCUPS_format.txt_
 
 ![peakHiC BigWig track in IGV](https://github.com/deLaatLab/peakHiC/raw/master/tutorial/peakHiC_example_Juicebox_snapshot.png)
 
-**Figure 3.** Visualization of peakHiC loops in JuiceBox on top of the GM12878 Hi-C map (hg38)
+**Figure 4.** Visualization of peakHiC loops in JuiceBox on top of the GM12878 Hi-C map (hg38)
 
