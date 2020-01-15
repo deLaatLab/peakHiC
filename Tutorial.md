@@ -56,6 +56,26 @@ This will prompt R to open a display with the resulting plot, which should look 
 
 **Figure 1.** Visualization of peakHiC V4C profile interactively in an R session
 
+To add loops to this plot, we can load the entire set of peakHiC loops, or make a selection of loops only relevant for this locus. You can specify loops overlapping any genomic regions of interest (such as promoters / enhancers / CTCF sites), but here we will just plot ALL loops overlapping with 2 example viewpoints:
+
+```{r source}
+ids <- c("CTCF_ENCODE_25928","CTCF_ENCODE_35219")
+overlapGRs <- peakHiCObj$vpsGR[match(ids,peakHiCObj$vpsGR$vpID)]
+par(mfrow=c(2,1))
+clr <- "#ff9900"
+v4cPlot(vpID=ids[1],peakHiCObj=peakHiCObj,showLoops=TRUE,overlapGRs=overlapGRs,ylim=c(0,2),col=clr)
+xlim=par("usr")[1:2]
+v4cPlot(vpID=ids[2],peakHiCObj=peakHiCObj,showLoops=TRUE,overlapGRs=overlapGRs,xlim=xlim,ylim=c(0,2),col=clr)
+```
+
+![peakHiC BigWig track in IGV](https://github.com/deLaatLab/peakHiC/raw/master/tutorial/peakHiC_example_v4cPlot_R_CTCF_VPs_with_loops.png)
+
+**Figure 2.** Visualization of V4C profiles of 2 example CTCF viewpoints together with peakHiC loops
+
+loopFile <- "/home/geert/localdev/github/peakHiC/RESULTS/Rao_4DN_GM12878_peakHiC_example/rds/loops/hg38_4DN_Rao_GM12878_peakHiC_example_GW_nReps_9_peakHiC_wSize_31_qWr_1.2_alphaFDR_0.05_processed_loops.txt"
+loopDF <- read.table(file=loopFile,sep="\t",header=TRUE,stringsAsFactors=FALSE)
+
+
 We can also export the peakHiC V4C tracks as BigWig tracks, which can be added to a trackHub for visualization in the UCSC browser or we can directly load them into IGV. You first need to specify a folder to write the tracks to. Make sure this folder exists and you have permission to write files to it. The code below will export 2 example tracks to this folder.
 
 ```{r source}
