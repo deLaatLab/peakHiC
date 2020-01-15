@@ -181,21 +181,22 @@ getV4CData <- function(vpID,peakHiCObj,configOpt=NULL,wSize=21,alphaFDR=0.1,qWr=
   
 }
 
-v4cPlot <- function(vpID,peakHiCObj,genesGR=NULL,loopDF=NULL,loopFile=NULL,ylimRanges=c(0.4,0.8),xdiv=1e6,...){
+v4cPlot <- function(vpID,peakHiCObj,showLoops=FALSE,overlapGRs=NULL,loopFile=NULL,loopYlim=c(0.4,0.8),xdiv=1e6,...){
 
   pDat <- getV4CData(vpID=vpID,peakHiCObj=peakHiCObj)
   plot(x=pDat$pos/xdiv,y=pDat$normV4C,type="h",frame.plot=FALSE,ylab="V4C",xlab="pos (Mb)",...)
   
-  if(!(is.null(loopDF)&is.null(loopFile))) {
+  if(showLoops){
+      
+      ylimCurrent <- par("usr")[3:4]
+      loops <- getOvLoops(peakHiCOBj=peakHiCObj,overlapGRs=overlapGRs,loopFile=loopFile)
+      addLoops(peakHiCObj = peakHiCObj, loops=loops, ylimCurrent=ylimCurrent,loopYlim=loopYlim)
     
-    ylimCurrent <- par("usr")[3:4]
-    addLoops(peakHiCObj = peakHiCObj, overlapGRs = overlapGRs, loopDF=loopDF,loopFile=loopFile,ylimCurrent=ylimCurrent,ylimRanges=ylimRanges)
-  
   }
-  
+
 }
 
-addLoops <- function(peakHiCObj,overlapGRs,loopDF=NULL,loopFile=NULL,xdiv=1e6,clr="darkgray",ylimCurrent=NULL,ylimRanges=c(0.4,0.8)){
+addLoops <- function(peakHiCObj,loops,anchorPlotSize=20e3,xdiv=1e6,clr="darkgray",ylimCurrent=NULL,loopYlim=c(0.4,0.8)){
   
   if(is.null(ylimCurrent)) {
     
@@ -203,47 +204,22 @@ addLoops <- function(peakHiCObj,overlapGRs,loopDF=NULL,loopFile=NULL,xdiv=1e6,cl
   
   }
   
-  if(is.null(loopDF)) {
-    
-    if(is.null(loopFile)) {
-      
-      hicCond <- peakHiCObj$configOpt$hicCond
-      
-      designMat <- peakHiCObj[["hic"]][["design"]]
-      hicTracksByCondition <- split(as.vector(designMat$trackID),designMat$HiCMap)
-      tracks <- hicTracksByCondition[[hicCond]]
-      
-      nReps <- length(tracks)
-      
-      rdsFldr <- paste0(peakHiCObj$configOpt$projectFolder,"rds/")
-      loopsFldr <- paste0(rdsFldr,"loops/")
-      loopFile <- paste0(loopsFldr,peakHiCObj$name,"_GW_nReps_",nReps,"_peakHiC_wSize_",peakHiCObj$configOpt$peakCalls$wSize,"_qWr_",peakHiCObj$configOpt$peakCalls$qWr,"_alphaFDR_",peakHiCObj$configOpt$peakCalls$alphaFDR,"_processed_loops.txt")
-      
-    }
-    
-    loopDF <- read.table(file=loopFile,sep="\t",header=TRUE,stringsAsFactors=FALSE)
-    
-  }
+  lx <- resize(loops$lx,width=anchorPlotSize,fix="center")
+  ly <- resize(loops$ly,width=anchorPlotSize,fix="center")
   
-  lx <- resize(GRanges(seqnames=loopDF$chr,IRanges(loopDF$vp_X1,loopDF$vp_X2)),width=10e3,fix="center")
-  ly <- resize(GRanges(seqnames=loopDF$chr,IRanges(loopDF$maxV4CscorePos,loopDF$maxV4CscorePos)),width=10e3,fix="center")
-  
-  IDX <- which(countOverlaps(lx,overlapGRs)>0|countOverlaps(ly,overlapGRs)>0)
-  
-  if(length(IDX)>0){
+  if(length(lx)>0){
     
-    loops <- list(lx=resize(lx[IDX],width=20e3,fix="center"),ly=resize(ly[IDX],width=20e3,fix="center"))
-    totalRange <- c((ylimCurrent[2]-ylimCurrent[1])*ylimRanges[1],(ylimCurrent[2]-ylimCurrent[1])*ylimRanges[2])
-    loopYms <- seq(from=totalRange[1],to=totalRange[2],length.out=length(loops$lx))
+    totalRange <- c((ylimCurrent[2]-ylimCurrent[1])*loopYlim[1],(ylimCurrent[2]-ylimCurrent[1])*loopYlim[2])
+    loopYms <- seq(from=totalRange[1],to=totalRange[2],length.out=length(lx))
     yOffSet <- (loopYms[2]-loopYms[1])/3
     
-    for( x in 1:length( loops$lx ) ) {
+    for( x in 1:length( lx ) ) {
       
-      plotRegions( loops$lx[x], yrange=c( loopYms[x]-yOffSet, loopYms[x]+yOffSet ), col=clr )
-      plotRegions( loops$ly[x], yrange=c( loopYms[x]-yOffSet, loopYms[x]+yOffSet ), col=clr )
+      plotRegions( lx[x], yrange=c( loopYms[x]-yOffSet, loopYms[x]+yOffSet ), col=clr )
+      plotRegions( ly[x], yrange=c( loopYms[x]-yOffSet, loopYms[x]+yOffSet ), col=clr )
       
-      minX <- ( min( start( loops$lx[x] ), start( loops$lx[x] ), end( loops$ly[x] ), end( loops$ly[x] ) )+5e3 ) / 1e6
-      maxX <- ( max( start( loops$lx[x] ), start( loops$lx[x] ), end( loops$ly[x] ), end( loops$ly[x] ) )-5e3 ) / 1e6
+      minX <- ( min( start( lx[x] ), start( lx[x] ), end( ly[x] ), end( ly[x] ) )+5e3 ) / 1e6
+      maxX <- ( max( start( lx[x] ), start( lx[x] ), end( ly[x] ), end( ly[x] ) )-5e3 ) / 1e6
       
       segments( x0=minX, x1=maxX, y0=loopYms[x], lty=2 )
       
@@ -272,27 +248,74 @@ plotRegions <- function( ranges, yrange, xdiv=1e6, plotRanges=NULL, col="black" 
   
 }
 
-getOvLoops <- function(vpIDs,vpsGR,loops) {
+getOvLoops <- function(peakHiCOBj,overlapGRs=NULL,loopFile=NULL) {
   
   require(GenomicRanges)
   
   out <- NULL
   
-  lx <- resize(GRanges(seqnames=loops$chr,IRanges(loops$vp_X1,loops$vp_X2)),width=10e3,fix="center")
-  ly <- resize(GRanges(seqnames=loops$chr,IRanges(loops$maxV4CscorePos,loops$maxV4CscorePos)),width=10e3,fix="center")
-  
-  gRs <- vpsGR[na.omit(match(vpIDs,vpsGR$vpID))]
-  
-  IDX <- which(countOverlaps(lx,gRs)>0|countOverlaps(ly,gRs)>0)
-  
-  if(length(IDX)>0){
+  if(is.null(loopFile)) {
     
-    out <- list(lx=lx[IDX],ly=ly[IDX])
+    rdsFldr <- paste0(peakHiCObj$configOpt$projectFolder,"rds/")
+    loopsFldr <- paste0(rdsFldr,"loops/")
+    wSize <- peakHiCObj$configOpt$peakCalls$wSize
+    alphaFDR <- peakHiCObj$configOpt$peakCalls$alphaFDR
+    qWr <- peakHiCObj$configOpt$peakCalls$qWr
+    nReps <- nrow(peakHiCObj$hic$design)
+    loopFile <- paste0(loopsFldr,peakHiCObj$name,"_GW_nReps_",nReps,"_peakHiC_wSize_",wSize,"_qWr_",qWr,"_alphaFDR_",alphaFDR,"_processed_loops.txt")
+  
+  }
+  
+  if(file.exists(loopFile)){
     
-  } 
+    loopDF <- read.table(file=loopFile,sep="\t",header=TRUE,stringsAsFactors=FALSE)
+    rankVar <- paste0(peakHiCObj$configOpt$hicCond,".covQ.norm")
+    
+    if(!is.null(loopDF[[rankVar]])){
+      
+      loopDF <- loopDF[order(loopDF[[rankVar]],decreasing=TRUE),]
+      loopDF <- loopDF[!duplicated(loopDF$NR.binID),]
+      
+    }
+    
+    lx <- resize(GRanges(seqnames=loopDF$chr,IRanges(loopDF$vp_X1,loopDF$vp_X2)),width=10e3,fix="center")
+    ly <- resize(GRanges(seqnames=loopDF$chr,IRanges(loopDF$maxV4CscorePos,loopDF$maxV4CscorePos)),width=10e3,fix="center")
+    
+    IDX <- 1:length(lx)
+    
+    if(!is.null(overlapGRs)) {  
+    
+      IDX <- which(countOverlaps(lx,overlapGRs)>0|countOverlaps(ly,overlapGRs)>0)
+    
+    }
+    
+    if(length(IDX)>0){
+    
+      out <- list(lx=resize(lx[IDX],width=10e3,fix="center"),ly=resize(ly[IDX],width=10e3,fix="center"))
+    
+    }
+  
+  } else {
+      
+      stop("Loopfile not found. Please check the path to the peakHiC loop file.")
+  }
   
   return(out)
   
+}
+
+getLoopFile <- function(peakHiCOb) {
+  
+  rdsFldr <- paste0(peakHiCObj$configOpt$projectFolder,"rds/")
+  loopsFldr <- paste0(rdsFldr,"loops/")
+  wSize <- peakHiCObj$configOpt$peakCalls$wSize
+  alphaFDR <- peakHiCObj$configOpt$peakCalls$alphaFDR
+  qWr <- peakHiCObj$configOpt$peakCalls$qWr
+  nReps <- nrow(peakHiCObj$hic$design)
+  loopFile <- paste0(loopsFldr,peakHiCObj$name,"_GW_nReps_",nReps,"_peakHiC_wSize_",wSize,"_qWr_",qWr,"_alphaFDR_",alphaFDR,"_processed_loops.txt")
+  
+  return(loopFile)
+
 }
 
 exportLoops <- function(peakHiCObj,loopFile=NULL,outFilePrefix=NULL,makeNR=TRUE,vpFilter=NULL,loopType=NULL) {
