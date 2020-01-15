@@ -60,3 +60,4 @@ Rscript processLoops.R -chr chr1 -peakHiCObj /home/geert/localdev/github/peakHiC
 
 This should generate R files with V4C profiles of some example viewpoints and a list of processed loops in **/home/geert/localdev/github/peakHiC/RESULTS/Rao_4DN_GM12878_peakHiC_example/rds/loops/**.
 
+For further analysis and visualization of the example data, please open en read the Tutorial.md in this repository. 
