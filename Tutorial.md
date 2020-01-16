@@ -35,7 +35,7 @@ in the R console. To add your own viewpoints, you need to create a txt file whic
 
 **Table 1.** Example of a peakHiC viewpoint file which defines genomic loci from which V4C profiles will be created.
 
-The R code below will read this file and replace the vpsGR object in peakHiCObj, so that these viewpoints can be analyzed. Based on the genomic partition and restriction fragments defined in the peakHiC object, the __creatVPs__ function will assign a partID and fragID to each viewpoint. 
+The R code below will read this file and replace the vpsGR object in peakHiCObj, so that these viewpoints can be analyzed. Based on the genomic partition and restriction fragments defined in the peakHiC object, the __createVPs__ function will assign a partID and fragID to each viewpoint. 
 
 ```{r source}
 exampleVPs <- paste0(baseFolder,"DATA/example_data/hg38_4DN_Rao_GM12878_peakHiC_example_VPs.txt")
