@@ -92,7 +92,7 @@ peakHiC loops can also be exported to files / tracks that are compatible with ei
 exportLoops(peakHiCObj,outFilePrefix="/home/geert/localdev/github/peakHiC/RESULTS/Rao_4DN_GM12878_peakHiC_example/rds/loops/peakHiC_example")
 ```
 
-Below is a screenshot of the exported file __peakHiC_example_HICCUPS_format.txt__ . To obtain this, we downloaded the hg38 assembly version of the GM12878 Hi-C data in juicer (.hic) format from the 4DN, loaded it into Juicebox and used the .
+Below is a screenshot of the exported loops in the file __peakHiC_example_HICCUPS_format.txt__. To obtain this, we downloaded the hg38 assembly version of the GM12878 Hi-C data in juicer (.hic) format from the 4DN, loaded it into Juicebox and imported the file with loops that we exported with peakHiC into Juicebox.
 
 ![peakHiC BigWig track in IGV](https://github.com/deLaatLab/peakHiC/raw/master/tutorial/peakHiC_example_Juicebox_snapshot.png)
 
