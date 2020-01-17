@@ -58,6 +58,6 @@ Rscript callPartitionPeaksbyChr.R -chr chr1 -peakHiCObj /home/geert/localdev/git
 Rscript processLoops.R -chr chr1 -peakHiCObj /home/geert/localdev/github/peakHiC/DATA/example_data/hg38_4DN_Rao_GM12878_peakHiC_example_peakHiCObj.rds
 ```
 
-Execution time for the above commands is approximately 200, 560 and 50 seconds respectively using a single thread on a Intel Core i7-6700K CPU at 4.00GHz on a Ubuntu Linux 18.04.3 workstation with 32GB memory. We note that running a single thread should not require more than 2 GB of memory. Running these commands should generate R files with V4C profiles of some example viewpoints and a list of processed loops in **/home/geert/localdev/github/peakHiC/RESULTS/Rao_4DN_GM12878_peakHiC_example/rds/loops/**.
+Execution time for the above three commands is approximately 200, 560 and 50 seconds respectively using a single thread on a Intel Core i7-6700K CPU at 4.00GHz on a Ubuntu Linux 18.04.3 workstation with 32GB memory. We note that running a single thread should not require more than 2 GB of memory. Running these commands should generate R files with V4C profiles of some example viewpoints and a list of processed loops in **/home/geert/localdev/github/peakHiC/RESULTS/Rao_4DN_GM12878_peakHiC_example/rds/loops/**.
 
-For further analysis and visualization of the example data, please open en read the Tutorial.md in this repository. 
+For further analysis and visualization of the example data, please open en read the Tutorial.md (https://github.com/deLaatLab/peakHiC/blob/master/Tutorial.md) in this repository. 
