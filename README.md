@@ -32,7 +32,7 @@ First choose a folder where to install the pipeline. The R scripts will search f
 git clone https://github.com/deLaatLab/peakHiC.git
 ```
 
-Another path required to setup is the location of the pairix binary. peakHiC uses the 4DN-DCIC tool pairix (see **Prerequisites**) to read HiC data in the pairs format. Below we explain how to configure peakHiC to locate this tool.
+Another path required to setup is the location of the pairix binary. peakHiC uses the 4DN-DCIC tool pairix (see **Prerequisites**) to read HiC data in the pairs format. Below we explain how to configure peakHiC to locate this tool. Please make sure this tool is installed before proceding to the next steps. After installing the pairix tool and the necessary R packages from CRAN and Bioconductor, peakHiC installation should take less than one minute. 
 
 ## Configure peakHiC to use example data
 
@@ -58,6 +58,6 @@ Rscript callPartitionPeaksbyChr.R -chr chr1 -peakHiCObj /home/geert/localdev/git
 Rscript processLoops.R -chr chr1 -peakHiCObj /home/geert/localdev/github/peakHiC/DATA/example_data/hg38_4DN_Rao_GM12878_peakHiC_example_peakHiCObj.rds
 ```
 
-This should generate R files with V4C profiles of some example viewpoints and a list of processed loops in **/home/geert/localdev/github/peakHiC/RESULTS/Rao_4DN_GM12878_peakHiC_example/rds/loops/**.
+Execution time for the above commands is approximately 200, 560 and 50 seconds respectively using a single thread on a Intel Core i7-6700K CPU at 4.00GHz on a Ubuntu Linux 18.04.3 workstation with 32GB memory. We note that running a single thread should not require more than 2 GB of memory. Running these commands should generate R files with V4C profiles of some example viewpoints and a list of processed loops in **/home/geert/localdev/github/peakHiC/RESULTS/Rao_4DN_GM12878_peakHiC_example/rds/loops/**.
 
 For further analysis and visualization of the example data, please open en read the Tutorial.md in this repository. 
