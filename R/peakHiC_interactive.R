@@ -189,7 +189,7 @@ v4cPlot <- function(vpID,peakHiCObj,showLoops=FALSE,overlapGRs=NULL,loopFile=NUL
   if(showLoops){
       
       ylimCurrent <- par("usr")[3:4]
-      loops <- getOvLoops(peakHiCOBj=peakHiCObj,overlapGRs=overlapGRs,loopFile=loopFile)
+      loops <- getOvLoops(peakHiCObj=peakHiCObj,overlapGRs=overlapGRs,loopFile=loopFile)
       
       addLoops(peakHiCObj = peakHiCObj, loops=loops, ylimCurrent=ylimCurrent,loopYlim=loopYlim)
     
