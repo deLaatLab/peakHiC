@@ -249,7 +249,7 @@ plotRegions <- function( ranges, yrange, xdiv=1e6, plotRanges=NULL, col="black" 
   
 }
 
-getOvLoops <- function(peakHiCOBj,overlapGRs=NULL,loopFile=NULL) {
+getOvLoops <- function(peakHiCObj,overlapGRs=NULL,loopFile=NULL) {
   
   require(GenomicRanges)
   
@@ -305,7 +305,7 @@ getOvLoops <- function(peakHiCOBj,overlapGRs=NULL,loopFile=NULL) {
   
 }
 
-getLoopFile <- function(peakHiCOb) {
+getLoopFile <- function(peakHiCObj) {
   
   rdsFldr <- paste0(peakHiCObj$configOpt$projectFolder,"rds/")
   loopsFldr <- paste0(rdsFldr,"loops/")
