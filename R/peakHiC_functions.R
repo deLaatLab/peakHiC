@@ -882,7 +882,7 @@ getBinPairs <- function(loops,bins,anchorSize=10e3) {
   ovl.lx <- ovl.lx[match(loopIDs,ovl.lx@from)]
   ovl.ly <- ovl.ly[match(loopIDs,ovl.ly@from)]
   
-  NR.binID <- paste0(pmin(ovl.lx@to,ovl.ly@to),".",pmax(ovl.lx@to,ovl.ly@to))
+  NR.binID <- paste0(pmin(ovl.lx@to,ovl.ly@to),"_",pmax(ovl.lx@to,ovl.ly@to))
   loops$NR.binID <- NR.binID
   
   return(loops)
