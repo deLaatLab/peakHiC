@@ -52,8 +52,8 @@ extractReads <- function( fragID, vpS, vpZoom=c(1e6,1e6), reads, frags, k=31, vp
   if ( maxVPpos > max( end( fragsChr ) ) ){
     maxVPpos <- max( end( fragsChr ) )
   }
-  
-  # selection of the reads that share the viewpoint fragments
+
+    # selection of the reads that share the viewpoint fragments
   idxPE1.c1 <- queryHits( findOverlaps(reads$PE1,fragsChr[metaFrags]) )
   idxPE2.c1 <- queryHits( findOverlaps(reads$PE2,fragsChr[metaFrags]) )
   
@@ -77,6 +77,7 @@ extractReads <- function( fragID, vpS, vpZoom=c(1e6,1e6), reads, frags, k=31, vp
   }
   
   vpCovGR <- vpF[ which( start( vpF ) >= minVPpos & end( vpF ) <= maxVPpos ) ]
+  #######################why do we take 100 here??????  Should be read length??##############################################
   vp_cov <- 100*( length( which( vpCovGR$reads > 0 ) ) / length( vpCovGR ) )
   
   nReads <- length( which( vpF$reads > 0 ) )
@@ -168,7 +169,7 @@ combine.reps <- function (data) {
   data.m <- data[[1]]
   
   for (i in 2:num.exp) {
-    data.m <- merge(data.m, data[[i]], by = 1)
+    data.m <- base::merge(data.m, data[[i]], by = 1)
   }
   
   sumReads <- apply(data.m[,2:(num.exp+1)],1,sum)
@@ -186,13 +187,13 @@ peakAnalysis <- function (data, num.exp = 3, vp.pos, wSize = 21, alphaFDR = 0.1,
     vp.pos <- c(vp.pos, vp.pos)
   }
   vp.pos <- sort(vp.pos)
-  db <- tryCatch({ combine.experiments(data, num.exp, vp.pos) }, error=function(e) { return (NULL) } )
+  db <- tryCatch({ combine.experiments(data, num.exp, vp.pos) }, error=function(e) { return (NULL) } ) #peakC::combine.experiments   copy-pasted now
   if ( !is.null( db ) ){
     dbR <- db
     dbR[, 2:(num.exp + 1)] <- apply(db[, 2:(num.exp + 1)], 2, 
                                     caTools::runmean, k = wSize, endrule = "mean")
     dbR[, 2:(num.exp + 1) + num.exp] <- apply(db[, 2:(num.exp + 
-                                                        1) + num.exp], 2, caTools::runmean, k = 5, endrule = "mean")
+                                                        1) + num.exp], 2, caTools::runmean, k = 5, endrule = "mean") #why k=5 here?
     pseudoCount <- apply(db[, 2:(num.exp + 1)], 2, non.zero.quantile, 
                          probs = 0.05)
     # print(pseudoCount)
@@ -428,7 +429,8 @@ getPartitionPeaks <- function(partID, peakHiCObj, configOpt=NULL, hicCond=NULL, 
       }
       
       for(id in ids) {
-        
+        #consider changing for loop into lapply
+        #consider subsetting vpReads before passing to function
         peakRes <- getPeakCPeaksWithReps(vpID=id,vpReads=vpReads, partVPs=partVPs, hicCond=hicCond, wSize=wSize, qWr=qWr, alphaFDR=alphaFDR,  minDist=minDist)
         
         if(nrow(peakRes$df)>0) {
@@ -455,7 +457,7 @@ getPartitionPeaks <- function(partID, peakHiCObj, configOpt=NULL, hicCond=NULL, 
 }
 
 getChrPeaks <- function(chr, peakHiCObj, configOpt, hicCond=NULL, wSize=NULL, qWr=NULL, alphaFDR=NULL,  minDist=NULL, nReps=NULL, nThreads=8) {
-  
+  #fix this?? do we need doParallel can we even do this on top of exisiting clusters?
   suppressPackageStartupMessages(require(doParallel))
   registerDoParallel(cores=nThreads)
   
@@ -463,7 +465,7 @@ getChrPeaks <- function(chr, peakHiCObj, configOpt, hicCond=NULL, wSize=NULL, qW
   ids <- unique(subChr(vpsGR,chr)$partID)
   
   foreach(i = 1:length(ids)) %dopar% {
-    
+ # for(i in 1:length(ids)){
     getPartitionPeaks(partID=ids[i], peakHiCObj=peakHiCObj, hicCond=hicCond, wSize=wSize, qWr=qWr, alphaFDR=alphaFDR,  minDist=minDist, nReps=nReps)
     
   }
@@ -473,7 +475,7 @@ getChrPeaks <- function(chr, peakHiCObj, configOpt, hicCond=NULL, wSize=NULL, qW
 }
 
 getPeakCPeaksWithReps <- function( vpID, vpReads, partVPs, hicCond="HAP1_WAPL", wSize=31, qWr=1, alphaFDR=0.1,  minDist=30e3 ) {
-  
+
   vpPos <- start(partVPs[match(vpID,partVPs$vpID)])
   vpChr <- as.vector(seqnames(partVPs[match(vpID,partVPs$vpID)]))
   
@@ -615,7 +617,7 @@ doPeakCPlot <- function(vpID,peakHiCObj,configOpt,hicCond=NULL,wSize=NULL,qWr=NU
 }
 
 getPeakHiCData <- function(partID,frags,peakHiCObj,configOpt=NULL,hicCond=NULL,wSize=NULL,vpSize=NULL,v4cSize=NULL) {
-  
+  #browser()
   if(is.null(configOpt)){
     
     configOpt <- peakHiCObj$configOpt
@@ -648,7 +650,7 @@ getPeakHiCData <- function(partID,frags,peakHiCObj,configOpt=NULL,hicCond=NULL,w
     
     reads <- list()
     tracks <- hicTracksByCondition[[hicCond]]
-    
+    #browser()
     for(trackID in tracks) {
       
       reads[[trackID]] <- getPartitionReads(partID=partID,trackID=trackID,peakHiCObj=peakHiCObj)
@@ -656,25 +658,48 @@ getPeakHiCData <- function(partID,frags,peakHiCObj,configOpt=NULL,hicCond=NULL,w
     }
     
     for(vpID in vps$vpID) {
-      
+     
       vpReads[[vpID]] <- list()
       vpReads[[vpID]][[hicCond]] <- list()
       fragID <- vps$fragID[match(vpID,vps$vpID)]
       vpPos <- start(vps[match(vpID,vps$vpID)])
-      
-      for(trackID in tracks) {
-        
-        vpReads[[vpID]][[hicCond]][[trackID]] <- extractReads(fragID=fragID,vpS=vpPos,vpZoom=c(v4cSize,v4cSize),reads=reads[[trackID]],frags=frags,k=wSize,vpSize=vpSize)
-        
-      }
+    
+    for(trackID in tracks) {
+     
+      vpReads[[vpID]][[hicCond]][[trackID]] <- extractReads(fragID=fragID,vpS=vpPos,vpZoom=c(v4cSize,v4cSize),reads=reads[[trackID]],frags=frags,k=wSize,vpSize=vpSize)
+     
     }
+    }
+
+    #vpReads <- lapply(vps$vpID, vpID.V4C, vps=vps, hicCond=hicCond, tracks=tracks)
+    #names(vpReads) <- vps$vpID 
+
   }
   
-  vpReads$configOpt <- configOpt
-  
-  return(vpReads)
+    vpReads$configOpt <- configOpt
+    return(vpReads)
   
 }
+
+vpID.V4C <- function(vpID, vps, hicCond, tracks){
+  #per viewpoint contruct a V4C
+  #browser()
+  sub.vpReads <- list()
+  sub.vpReads[[hicCond]] <- list()
+  fragID <- vps$fragID[match(vpID,vps$vpID)]
+  vpPos <- start(vps[match(vpID,vps$vpID)])
+  
+  #ptm <- proc.time()
+  #per track (per VP) gather the reads
+  sub.vpReads[[hicCond]] <- lapply(tracks, FUN=function(trackID) extractReads(
+    fragID=fragID,vpS=vpPos,vpZoom=c(v4cSize,v4cSize),reads=reads[[trackID]],frags=frags,k=wSize,vpSize=vpSize) )
+  #print(proc.time()-ptm)
+  
+  names(sub.vpReads[[hicCond]]) <- tracks
+  
+  return(sub.vpReads)
+}  
+
 
 subChr <- function(gR,chr) {
   
@@ -929,8 +954,9 @@ getTADCovbyPartition <- function(partID,loops,peakHiCObj,hicCond="Rao_4DN_GM1287
   
 }
 
+########needs to be changed####################################
 getPartitionReads <- function(partID,trackID,peakHiCObj,configOpt=NULL,nThread=2) {
-  
+
   require(data.table)
   require(GenomicRanges)
   
@@ -952,16 +978,26 @@ getPartitionReads <- function(partID,trackID,peakHiCObj,configOpt=NULL,nThread=2
     qPartition <- peakHiCObj$partition$partGR[partIdx]
     chr <- as.vector(seqnames(qPartition[1]))
     qRegion <- paste0("\'",chr,":",start(qPartition),"-",end(qPartition),"\'")
-    
     tmpFldr <- tempdir()
     tmpFile <- paste0(tmpFldr,"/pairix_query.txt")
     pairixFile <- paste0(readsFldr,trackID,".pairs.gz")
-    
+    #browser()
     if (file.exists(pairixFile)&file.exists(pairixBinary)) {
+      
+      ######################################here do not write to tmpFile but directly into GRanges################################
+      #However, only 55 MB........; total temp files 3.8Gb, but can equally be removed at the end of section
+      dir.create(tempdir(), showWarnings = FALSE)
       
       cmd <- paste0(pairixBinary," ",pairixFile," ",qRegion," > ",tmpFile)
       system(cmd)
       dat <- fread(file=tmpFile,header=FALSE,sep="\t",stringsAsFactors=FALSE,nThread=nThread)
+      
+      cmd <- paste0("rm -r ",tempdir())
+      system(cmd)
+      #############################################################################################################################
+      #we could either save it in a dedicated location and remove right after returning GRanges objecct
+      #we could use R package of pairix thereby circumventing file creation altoghether
+      #we could, per VP, query the pairix file to obtain reads as opposed to using GRanges (derived from intermediate file)
       PE1 <- GRanges(seqnames=dat$V2,IRanges(dat$V3,dat$V3))
       PE2 <- GRanges(seqnames=dat$V4,IRanges(dat$V5,dat$V5))
       out <- list(PE1=PE1,PE2=PE2)
@@ -1112,7 +1148,7 @@ getChrSeqlengths <- function(BSname) {
 }
 
 createVPs <- function(vpData, peakHiCObj, fragsFile=NULL) {
-  
+  #vpData <- read.table("DATA/example_data/hg38_4DN_Rao_GM12878_peakHiC_example_VPs.txt",header = TRUE, stringsAsFactors = FALSE)
   if(is.null(fragsFile)) {
     
     fragsFile <- peakHiCObj$configOpt$fragsFile
@@ -1129,6 +1165,13 @@ createVPs <- function(vpData, peakHiCObj, fragsFile=NULL) {
     vpsGR$type <- vpData$type
     
     partGR <- peakHiCObj$partition$partGR
+    
+    to.keep <- unique(findOverlaps(ranges(vpsGR), ranges(partGR))@from)
+    thrown <- length(vpsGR[-to.keep]$vpID)
+    if(thrown>1){message(paste0('Discarded ',thrown,' VPs outside defined paritions.'))}
+    
+    vpsGR <- vpsGR[to.keep]
+    
     distMap <- distanceToNearest(vpsGR,resize(partGR,width=1,fix="center"))
     
     vpsGR$partID <- "no.part"
@@ -1644,8 +1687,8 @@ peakHiCConf <- function(confFile){
   peakHiCObj$hic$design <- designDF
   peakHiCObj$partition$partGR <- partGR
   
-  vpData <- read.table(configOpt$VPsFile,sep="\t",stringsAsFactors=FALSE,header=TRUE)
-  peakHiCObj$vpsGR <- createVPs(vpData=vpData,peakHiCObj=peakHiCObj,fragsFile=peakHiCObj$configOpt$fragsFile)
+  vpData <- read.table(configOpt$VPsFile,stringsAsFactors=FALSE,header=TRUE)
+  peakHiCObj$vpsGR <- createVPs(vpData=vpData,peakHiCObj=peakHiCObj)
   
   saveRDS(peakHiCObj,file=peakHiCObj$configOpt$peakHiCObj)
   
@@ -1717,5 +1760,80 @@ exportLoops <- function(peakHiCObj,loopFile=NULL,makeNR=TRUE) {
     writeHICCUPs2D(lx=lx,ly=ly,outFile=hiccupsFile)
     
   }
+  
+}
+
+combine.experiments <- function( data, num.exp = 0, vp.pos ){
+  if(num.exp == 0){
+    num.exp = data$num.exp
+  }
+  #create two element vector containing the viewpoint position
+  #if only one viewpoint is given
+  if(length(vp.pos) == 1){
+    vp.pos <- c(vp.pos,vp.pos)
+  }
+  vp.pos <- sort(vp.pos)
+  data.m <- data[[1]]
+  for( i in 2:num.exp ){
+    data.m <- base::merge(data.m, data[[i]], by=1)
+  }
+  #create the background model for the upstream regions
+  data.bg <- data.m
+  for( i in 1:num.exp ){
+    data.bg[data.m[,1] < vp.pos[1],i+1] <- get.background(data.m[data.m[,1] < vp.pos[1],c(1,i+1)], vp.pos[1] )
+  }
+  #and for the downstream regions
+  for( i in 1:num.exp ){
+    data.bg[data.m[,1] > vp.pos[2],i+1] <- get.background(data.m[data.m[,1] > vp.pos[2],c(1,i+1)], vp.pos[2] )
+  }
+  #if two viewpoint fragments are given set the intervening fragments
+  #to zero
+  #set background to 1 to prevent NaN in the ratio
+  if(vp.pos[1] != vp.pos[2]){
+    for( i in 1:num.exp){
+      data.m[data.m[,1] >= vp.pos[1] & data.m[,1] <= vp.pos[2],i+1] <- 0
+      data.bg[data.m[,1] >= vp.pos[1] & data.m[,1] <= vp.pos[2],i] <- 1
+    }
+  }
+  cbind(data.m, data.bg[,-1])
+}
+
+#perform pava regression and return the background regression line
+get.background <- function( data, vp.pos, weight.factor=0, fractile=F){
+  require(isotone)
+  switched = FALSE
+  weights <- (1:nrow(data))**weight.factor
+  if(data[1,1] > vp.pos){
+    data[,1] <- -data[,1] #reverse the sign to make the trend increasing
+    switched = TRUE
+    weights <- rev(weights)
+  }
+  #create the isotonic regression
+  if(fractile){
+    lm <- gpava(data[,1], data[,2], solver=weighted.fractile, weights=NULL, p=0.75)
+  }else{
+    lm <- gpava(data[,1], data[,2], solver=weighted.mean)
+  }
+  
+  if(switched)
+    pred.data <- data.frame( -lm$z, lm$x )
+  else
+    pred.data <- data.frame( lm$z, lm$x )
+  
+  pred.data[order(pred.data[,1]),2]
+}
+
+get.single.background <- function(data, num.exp = 1, vp.pos) {
+  
+  if (length(vp.pos) == 1) {
+    vp.pos <- c(vp.pos, vp.pos)
+  }
+  vp.pos <- sort(vp.pos)
+  
+  data.bg <- data
+  data.bg[data[, 1] < vp.pos[1], 2] <- get.background(data[data[, 1] < vp.pos[1], c(1, 2)], vp.pos[1])
+  data.bg[data[, 1] > vp.pos[2], 2] <- get.background(data[data[, 1] > vp.pos[2], c(1, 2)], vp.pos[2])
+  
+  return(cbind(data, data.bg[, -1]))
   
 }

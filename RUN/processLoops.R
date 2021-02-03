@@ -39,6 +39,18 @@ baseFolder <- args$baseFolder
 anchorSize <- args$anchorSize
 
 #################################################################################################################
+### Load packages and R functions ###############################################################################
+#################################################################################################################
+
+message( paste0( '> loading R libraries and functions..' ) )
+
+if( !suppressMessages(require( "GenomicRanges", character.only=TRUE ) ) ) stop( "Package not found: GenomicRanges" )
+if( !suppressMessages(require( "zoo", character.only=TRUE ) ) ) stop( "Package not found: zoo" )
+#if( !suppressMessages(require( "peakC", character.only=TRUE ) ) ) stop( "Package not found: peakC" )
+if( !suppressMessages(require( "data.table", character.only=TRUE ) ) ) stop( "Package not found: data.table" )
+
+
+#################################################################################################################
 ### Load object with global peakHiC settings ####################################################################
 #################################################################################################################
 
@@ -79,17 +91,6 @@ if(!is.null(baseFolder)) {peakHiCObj$configOpt$baseFolder <- baseFolder}
 #################################################################################################################
 
 sourceFile <- paste0(peakHiCObj$configOpt$baseFolder,"R/peakHiC_functions.R")
-
-#################################################################################################################
-### Load packages and R functions ###############################################################################
-#################################################################################################################
-
-message( paste0( '> loading R libraries and functions..' ) )
-
-if( !suppressMessages(require( "GenomicRanges", character.only=TRUE ) ) ) stop( "Package not found: GenomicRanges" )
-if( !suppressMessages(require( "zoo", character.only=TRUE ) ) ) stop( "Package not found: zoo" )
-if( !suppressMessages(require( "peakC", character.only=TRUE ) ) ) stop( "Package not found: peakC" )
-if( !suppressMessages(require( "data.table", character.only=TRUE ) ) ) stop( "Package not found: data.table" )
 
 source(sourceFile)
 

@@ -36,19 +36,35 @@ parser$add_argument('-hicReadsFolder', type='character', help='path to the folde
 
 args <- parser$parse_args()
 
+chr <- 'chr1'
+peakHiCObjFile <- "~/localdev/peakHiC/DATA/example_data/hg38_4DN_Rao_GM12878_peakHiC_example_peakHiCObj.rds"
 chr <- args$chr
 peakHiCObjFile <- args$peakHiCObj
 
-wSize <- args$wSize
-vpSize <- args$vpSize
-alphaFDR <- args$alphaFDR
-minDist <- args$minDist
-qWr <- args$qWr
-v4cSize <- args$v4cSize
-hicCond <- args$hicCond
-baseFolder <- args$baseFolder
-projectFolder <- args$projectFolder
-hicReadsFolder <- args$hicReadsFolder
+wSize <- NULL #args$wSize
+vpSize <- NULL #args$vpSize
+alphaFDR <- NULL #args$alphaFDR
+minDist <- NULL #args$minDist
+qWr <- NULL #args$qWr
+v4cSize <- NULL #args$v4cSize
+hicCond <- NULL #args$hicCond
+baseFolder <- NULL #args$baseFolder
+projectFolder <- NULL #args$projectFolder
+hicReadsFolder <- NULL #args$hicReadsFolder
+
+
+#################################################################################################################
+### Load packages and R functions ###############################################################################
+#################################################################################################################
+
+message( paste0( '> loading R libraries and functions..' ) )
+
+if( !suppressMessages(require( "GenomicRanges", character.only=TRUE ) ) ) stop( "Package not found: GenomicRanges" )
+if( !suppressMessages(require( "zoo", character.only=TRUE ) ) ) stop( "Package not found: zoo" )
+#if( !suppressMessages(require( "peakC", character.only=TRUE ) ) ) stop( "Package not found: peakC" )
+if( !suppressMessages(require( "data.table", character.only=TRUE ) ) ) stop( "Package not found: data.table" )
+if( !suppressMessages(require( "isotone", character.only=TRUE ) ) ) stop( "Package not found: data.table" )
+
 
 #################################################################################################################
 ### Load object with global peakHiC settings ####################################################################
@@ -77,21 +93,10 @@ if(!is.null(hicReadsFolder)) {peakHiCObj$configOpt$hicReadsFldr <- hicReadsFolde
 #################################################################################################################
 ### Load R functions ############################################################################################
 #################################################################################################################
-
 sourceFile <- paste0(peakHiCObj$configOpt$baseFolder,"R/peakHiC_functions.R")
-
-#################################################################################################################
-### Load packages and R functions ###############################################################################
-#################################################################################################################
-
-message( paste0( '> loading R libraries and functions..' ) )
-
-if( !suppressMessages(require( "GenomicRanges", character.only=TRUE ) ) ) stop( "Package not found: GenomicRanges" )
-if( !suppressMessages(require( "zoo", character.only=TRUE ) ) ) stop( "Package not found: zoo" )
-if( !suppressMessages(require( "peakC", character.only=TRUE ) ) ) stop( "Package not found: peakC" )
-if( !suppressMessages(require( "data.table", character.only=TRUE ) ) ) stop( "Package not found: data.table" )
-
 source(sourceFile)
+
+
 
 #################################################################################################################
 ### Run peakHiC script ##########################################################################################
@@ -110,23 +115,53 @@ if(!file.exists(rdsFldr)) {
   
 }
 
-for(i in 1:length(ids)) {
 
-	partID <- ids[i]
-	fRDS <- paste0(rdsFldr,"vpReads_",partID,".rds")
 
-	if(file.exists(fRDS)){
-	
-		message( paste0( '> calling peaks with peakHiC in partition ..' , partID) )	
-
-		tryCatch({
-	
-			getPartitionPeaks(partID=partID,peakHiCObj=peakHiCObj,writePeaksFile=TRUE)
-
-		}, error=function(e) { message(paste0("peak calling failed for partID ", ids[i])) })
-   }
+getLoops.partID <- function(partID) {
+  
+  source(sourceFile)
+  fRDS <- paste0(rdsFldr,"vpReads_",partID,".rds")
+  
+  if(file.exists(fRDS)){
+    
+    message( paste0( '> calling peaks with peakHiC in partition ..' , partID) )	
+    
+    tryCatch({
+      
+      getPartitionPeaks(partID=partID,peakHiCObj=peakHiCObj,writePeaksFile=TRUE)
+      return()
+      
+    }, error=function(e) { message(conditionMessage(paste0("peak calling failed for partID ", partID))) })
+  }
 }
 
-message( paste0( '>>>> DONE <<<<' ) )
 
+
+###################################################################################
+###Parallel calll##################################################################
+###################################################################################
+#n.cores <- (detectCores()-2)
+n.cores <- peakHiCObj$configOpt$nCores
+cl = makeCluster(n.cores, outfile="")
+
+clusterEvalQ(cl, c(suppressPackageStartupMessages({ 
+  library("GenomicRanges") 
+  library("data.table") 
+  library("zoo")
+  library("isotone") })) )
+
+clusterExport(cl=cl, varlist=c("peakHiCObj", "sourceFile", "frags", "rdsFldr"), envir=environment())
+
+#clusterEvalQ(cl, sessionInfo())
+
+
+ids <- unique(subChr(peakHiCObj[["vpsGR"]],chr)$partID)
+##### call the function in parallel for each partID and write in rdsFldr'
+#lapply(ids, FUN = getLoops.partID)
+
+parLapply(cl, ids, fun = getLoops.partID)
+stopCluster(cl)
+
+message('>>>> DONE <<<<')
 q("no")
+

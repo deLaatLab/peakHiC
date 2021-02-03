@@ -42,7 +42,27 @@ baseFolder <- args$baseFolder
 projectFolder <- args$projectFolder
 hicReadsFolder <- args$hicReadsFolder
 
+
+#################################################################################################################
+### Load packages ###############################################################################################
+#################################################################################################################
+
+message( paste0( '> loading R libraries and functions..' ) )
+
+if( !suppressMessages(require( "GenomicRanges", character.only=TRUE ) ) ) stop( "Package not found: GenomicRanges" )
+if( !suppressMessages(require( "zoo", character.only=TRUE ) ) ) stop( "Package not found: zoo" )
+if( !suppressMessages(require( "parallel", character.only=TRUE ) ) ) stop( "Package not found: parallel" )
+if( !suppressMessages(require( "data.table", character.only=TRUE ) ) ) stop( "Package not found: data.table" )
+
+#################################################################################################################
+### Load object with global peakHiC settings ####################################################################
+#################################################################################################################
 message( paste0( '> loading peakHiCObj..' ) )
+
+#chr <- 'chr1'
+#peakHiCObjFile <- "~/data/Leducq/peakHiCObj/hg38_Leducq_LA_LV_16kbbins_8parts.rds" #"~/data/Leducq/peakHiCObj/hg38_Leducq_LA_LV_10Mb_8parts.rds" #
+chr <- args$chr 
+peakHiCObjFile <- args$peakHiCObj 
 
 peakHiCObj <- readRDS(peakHiCObjFile)
 
@@ -61,25 +81,10 @@ if(!is.null(hicReadsFolder)) {peakHiCObj$configOpt$hicReadsFldr <- hicReadsFolde
 #################################################################################################################
 
 sourceFile <- paste0(peakHiCObj$configOpt$baseFolder,"R/peakHiC_functions.R")
-
-#################################################################################################################
-### Load packages ###############################################################################################
-#################################################################################################################
-
-message( paste0( '> loading R libraries and functions..' ) )
-
-if( !suppressMessages(require( "GenomicRanges", character.only=TRUE ) ) ) stop( "Package not found: GenomicRanges" )
-if( !suppressMessages(require( "zoo", character.only=TRUE ) ) ) stop( "Package not found: zoo" )
-if( !suppressMessages(require( "peakC", character.only=TRUE ) ) ) stop( "Package not found: peakC" )
-if( !suppressMessages(require( "data.table", character.only=TRUE ) ) ) stop( "Package not found: data.table" )
-
 source(sourceFile)
 
+
 frags <- readRDS(peakHiCObj$configOpt$fragsFile)[[chr]]
-
-vpsGR <- peakHiCObj[["vpsGR"]]
-ids <- unique(subChr(vpsGR,chr)$partID)
-
 rdsFldr <- paste0(peakHiCObj$configOpt$projectFolder,"rds/")
 
 if(!file.exists(rdsFldr)) {
@@ -95,23 +100,51 @@ if(!file.exists(rdsFldr)) {
 
 }
 
-for(i in 1:length(ids)) {
 
-	partID <- ids[i]
-
+getReads.PartID <- function(partID) {
+  
+  source(sourceFile)
 	fRDS <- paste0(rdsFldr,"vpReads_",partID,".rds")
-	message( paste0( '> analyzing partition ..' , partID) )	
+	message( paste0( '> analyzing partition: ' , partID) )	
 
 	tryCatch({
 	
 		vpReads <- getPeakHiCData(partID=partID,frags=frags,peakHiCObj=peakHiCObj)
+		#This file, per partition, has all the V4C's saved of that partition; this is about 130Mb
+		#I do not think there is a way around this
 		saveRDS(vpReads,file=fRDS)
-		 
-
-	}, error=function(e) { message(paste0("generation of V4C failed for partID ", ids[i])) })
+    
+			}, error=function(e) { message(paste0("generation of V4Cs failed for partID ", partID))}) #conditionMessage()
    
 }
 
-message( paste0( '>>>> DONE <<<<' ) )
 
+###################################################################################
+###Parallel call##################################################################
+###################################################################################
+#n.cores <- (detectCores()-2)
+n.cores <- peakHiCObj$configOpt$nCores
+cl = makeCluster(n.cores, outfile="")
+clusterEvalQ(cl, c(suppressPackageStartupMessages({ 
+  library("GenomicRanges") 
+  library("data.table") 
+  library("zoo") })) )
+
+clusterExport(cl=cl, varlist=c("peakHiCObj", "sourceFile", "frags", "rdsFldr"), envir=environment())
+#clusterEvalQ(cl, sessionInfo())
+
+
+ids <- unique(subChr(peakHiCObj[["vpsGR"]],chr)$partID)
+##### call the function in parallel for each partID and write in rdsFldr'
+#lapply(ids[8], FUN = getReads.PartID)
+
+parLapply(cl, ids, fun = getReads.PartID)
+
+stopCluster(cl)
+message('>>>> DONE <<<<')
 q("no")
+
+#test <- vpReads_part.1[-length(vpReads_part.1)]
+#ugly <- lapply(test, function(vp){ width(vp$hg38_human_heart_Leducq$LA_P01137$vpGR) })
+#mean(unlist(ugly))
+
