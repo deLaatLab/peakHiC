@@ -36,8 +36,6 @@ parser$add_argument('-hicReadsFolder', type='character', help='path to the folde
 
 args <- parser$parse_args()
 
-chr <- 'chr1'
-peakHiCObjFile <- "~/localdev/peakHiC/DATA/example_data/hg38_4DN_Rao_GM12878_peakHiC_example_peakHiCObj.rds"
 chr <- args$chr
 peakHiCObjFile <- args$peakHiCObj
 
