@@ -1,7 +1,7 @@
 name: peakHiC
 channels:
-  - bioconda
   - conda-forge
+  - bioconda
   - defaults
 dependencies:
   - _libgcc_mutex=0.1=conda_forge
@@ -32,10 +32,11 @@ dependencies:
   - bioconductor-zlibbioc=1.36.0=r40h037d062_0
   - bwidget=1.9.14=ha770c72_0
   - bzip2=1.0.8=h7f98852_4
+  - c-ares=1.17.1=h36c2ea0_0
   - ca-certificates=2020.12.5=ha878542_0
   - cairo=1.16.0=h7979940_1007
   - certifi=2020.12.5=py38h578d9bd_1
-  - curl=7.71.1=he644dc0_3
+  - curl=7.71.1=he644dc0_8
   - fontconfig=2.13.1=hba837de_1004
   - freetype=2.10.4=h0708190_1
   - fribidi=1.0.10=h36c2ea0_0
@@ -49,7 +50,7 @@ dependencies:
   - gxx_impl_linux-64=9.3.0=hd87eabc_18
   - gxx_linux-64=9.3.0=h0d07fa4_29
   - harfbuzz=2.7.4=h5cf4720_0
-  - htslib=1.9=h4da6232_3
+  - htslib=1.11=hd3b49d5_2
   - icu=68.1=h58526e2_0
   - jpeg=9d=h36c2ea0_0
   - kernel-headers_linux-64=2.6.32=h77966d4_13
@@ -57,18 +58,20 @@ dependencies:
   - ld_impl_linux-64=2.35.1=hea4e1c9_2
   - libblas=3.8.0=17_openblas
   - libcblas=3.8.0=17_openblas
-  - libcurl=7.71.1=hcdd3856_3
-  - libdeflate=1.2=h516909a_1
+  - libcurl=7.71.1=hcdd3856_8
+  - libdeflate=1.7=h7f98852_5
   - libedit=3.1.20191231=he28a2e2_2
+  - libev=4.33=h516909a_1
   - libffi=3.3=h58526e2_2
   - libgcc-devel_linux-64=9.3.0=h7864c58_18
   - libgcc-ng=9.3.0=h2828fa1_18
   - libgfortran-ng=9.3.0=hff62375_18
   - libgfortran5=9.3.0=hff62375_18
-  - libglib=2.66.4=h748fe8e_2
+  - libglib=2.66.5=h164308a_2
   - libgomp=9.3.0=h2828fa1_18
   - libiconv=1.16=h516909a_0
   - liblapack=3.8.0=17_openblas
+  - libnghttp2=1.43.0=h812cca2_0
   - libopenblas=0.3.10=pthreads_h4812303_5
   - libpng=1.6.37=h21135ba_2
   - libssh2=1.9.0=hab1572f_5
@@ -86,7 +89,7 @@ dependencies:
   - pairix=0.3.7=py38h197edbe_2
   - pango=1.42.4=h69149e4_5
   - pcre=8.44=he1b5a44_0
-  - pcre2=10.36=h032f7d1_0
+  - pcre2=10.36=h032f7d1_1
   - pip=21.0.1=pyhd8ed1ab_0
   - pixman=0.40.0=h36c2ea0_0
   - pthread-stubs=0.4=h36c2ea0_1001
@@ -139,4 +142,4 @@ dependencies:
   - xz=5.2.5=h516909a_1
   - zlib=1.2.11=h516909a_1010
   - zstd=1.4.8=ha95c52a_1
-prefix: /home/iwan/miniconda3/envs/peakHiC
+prefix: /home/ivaandrager/miniconda3/envs/peakHiC

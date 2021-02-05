@@ -2,7 +2,7 @@ default:
  baseFolder: ~/localdev/peakHiC/
  pairixBinary: ~/miniconda3/envs/peakhic/bin/pairix
  projectFolder: ~/localdev/peakHiC/RESULTS/Rao_4DN_GM12878_peakHiC_example/
- hicReadsFldr: ~/localdev/peakHiC/DATA/example_data/
+ hicReadsFldr: ~/localdev/peakHiC/DATA/example_data/ #must be indexed pairix (pairs) files; their names indicated in the design file
  fragsFile: ~/localdev/peakHiC/DATA/hg38_MboI_fragsByChr.rds
  VPsFile: ~/localdev/peakHiC/DATA/example_data/hg38_4DN_Rao_GM12878_peakHiC_example_VPs.txt
  peakHiCObj: ~/localdev/peakHiC/DATA/example_data/hg38_4DN_Rao_GM12878_peakHiC_example_peakHiCObj.rds
