@@ -60,7 +60,7 @@ if( !suppressMessages(require( "data.table", character.only=TRUE ) ) ) stop( "Pa
 message( paste0( '> loading peakHiCObj..' ) )
 
 #chr <- 'chr1'
-#peakHiCObjFile <- "~/data/Leducq/peakHiCObj/hg38_Leducq_LA_LV_16kbbins_8parts.rds" #"~/data/Leducq/peakHiCObj/hg38_Leducq_LA_LV_10Mb_8parts.rds" #
+#peakHiCObjFile <-"~/data/Carlo_mESC_peakHiC/peakHiCObj/mm10_mESC_12kbbins.rds" 
 chr <- args$chr 
 peakHiCObjFile <- args$peakHiCObj 
 

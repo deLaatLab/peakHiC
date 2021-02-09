@@ -980,7 +980,7 @@ getPartitionReads <- function(partID,trackID,peakHiCObj,configOpt=NULL,nThread=2
     qRegion <- paste0("\'",chr,":",start(qPartition),"-",end(qPartition),"\'")
     tmpFldr <- tempdir()
     tmpFile <- paste0(tmpFldr,"/pairix_query.txt")
-    pairixFile <- paste0(readsFldr,trackID,".pairs.gz")
+    pairixFile <- paste0(readsFldr,'/',trackID,".pairs.gz")
     #browser()
     if (file.exists(pairixFile)&file.exists(pairixBinary)) {
       
@@ -1673,7 +1673,8 @@ initExampleData <- function(baseFolder, pairixBinary) {
 }
 
 peakHiCConf <- function(confFile){
-
+  library(GenomicRanges)
+  
   configOpt <- createConfig(confFile=confFile)
   designDF <- readHiCDesign(designFile=configOpt$hic$designFile)
   partGR <- readRDS(configOpt$genomePartition$partitionGR)
