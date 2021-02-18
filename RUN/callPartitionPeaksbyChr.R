@@ -103,7 +103,7 @@ source(sourceFile)
 frags <- readRDS(peakHiCObj$configOpt$fragsFile)[[chr]]
 
 vpsGR <- peakHiCObj[["vpsGR"]]
-ids <- unique(subChr(vpsGR,chr)$partID)
+part.ids <- unique(subChr(vpsGR,chr)$partID)
 
 rdsFldr <- paste0(peakHiCObj$configOpt$projectFolder,"rds/")
 
@@ -149,15 +149,12 @@ clusterEvalQ(cl, c(suppressPackageStartupMessages({
   library("isotone") })) )
 
 clusterExport(cl=cl, varlist=c("peakHiCObj", "sourceFile", "frags", "rdsFldr"), envir=environment())
-
 #clusterEvalQ(cl, sessionInfo())
 
 
-ids <- unique(subChr(peakHiCObj[["vpsGR"]],chr)$partID)
 ##### call the function in parallel for each partID and write in rdsFldr'
 #lapply(ids, FUN = getLoops.partID)
-
-parLapply(cl, ids, fun = getLoops.partID)
+parLapply(cl, part.ids, fun = getLoops.partID)
 stopCluster(cl)
 
 message('>>>> DONE <<<<')

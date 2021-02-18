@@ -65,7 +65,7 @@ extractReads <- function( fragID, vpS, vpZoom=c(1e6,1e6), reads, frags, k=31, vp
     vpF$reads <- countOverlaps( vpF,reads$PE2[ idxPE1.c1 ] ) + countOverlaps( vpF,reads$PE1[ idxPE2.c1 ] )
     if ( length( which( vpF$reads > 0 ) ) > 2 ) {
       vpF <- normV4C( vpF )
-      vpF$normV4C <- rollmean( x=vpF$normReads, k=k, fill="extend" )
+      vpF$normV4C <- zoo::rollmean( x=vpF$normReads, k=k, fill="extend" )
     } else {
       vpF$normReads <- 0
       vpF$normV4C <- 0
@@ -359,7 +359,7 @@ getPartitionPeaks <- function(partID, peakHiCObj, configOpt=NULL, hicCond=NULL, 
   }
   
   rdsFldr <- paste0(configOpt$projectFolder,"rds/")
-  
+  #browser()
   profilesFldr <- paste0(rdsFldr,"profiles/")
   loopsFldr <- paste0(rdsFldr,"loops/")
   
@@ -488,7 +488,6 @@ getPeakCPeaksWithReps <- function( vpID, vpReads, partVPs, hicCond="HAP1_WAPL", 
   for(i in 1:num.exp) {
     
     if(!is.null(nextVPReads[[i]]$GR)){
-      
       dat <- data.frame(pos=nextVPReads[[i]]$GR$pos,reads=nextVPReads[[i]]$GR$reads)
       colnames(dat) <- c("pos",paste0("reads.R",i))
       peakCReads[[i]] <- dat
@@ -507,7 +506,7 @@ getPeakCPeaksWithReps <- function( vpID, vpReads, partVPs, hicCond="HAP1_WAPL", 
       return( list( gR=finalGR, df=finalDF ) )
     }
   }
-  
+  #browser()
   peakCReads$num.exp <- num.exp
   nReps <- num.exp
   
@@ -1308,7 +1307,7 @@ createPartitionGR <- function(frags,partSize=8e6) {
 }
 
 getRecipPeaks <- function(peakHiCObj,anchorSize=10e3,vpSize=10e3,loopDF=NULL,loopFile=NULL) {
-  
+  #browser()
   vpsGR <- peakHiCObj$vpsGR
   
   if(!is.null(loopDF)){
@@ -1775,8 +1774,9 @@ combine.experiments <- function( data, num.exp = 0, vp.pos ){
   }
   vp.pos <- sort(vp.pos)
   data.m <- data[[1]]
+  #browser()
   for( i in 2:num.exp ){
-    data.m <- base::merge(data.m, data[[i]], by=1)
+    data.m <- merge(data.m, data[[i]], by=1)
   }
   #create the background model for the upstream regions
   data.bg <- data.m
@@ -1811,9 +1811,9 @@ get.background <- function( data, vp.pos, weight.factor=0, fractile=F){
   }
   #create the isotonic regression
   if(fractile){
-    lm <- gpava(data[,1], data[,2], solver=weighted.fractile, weights=NULL, p=0.75)
+    lm <- isotone::gpava(data[,1], data[,2], solver=weighted.fractile, weights=NULL, p=0.75)
   }else{
-    lm <- gpava(data[,1], data[,2], solver=weighted.mean)
+    lm <- isotone::gpava(data[,1], data[,2], solver=weighted.mean)
   }
   
   if(switched)
