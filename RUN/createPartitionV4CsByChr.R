@@ -1,8 +1,10 @@
 message('\n')
 message( '#######################################################################################' )
-message( '# peakHi-C - 2020 Geert Geeven and Valerio Bianchi - Hubrecht Institute ###############' )
+message( '# peakHi-C - 2021 Geert Geeven and Valerio Bianchi - Hubrecht Institute ###############' )
 message( '#######################################################################################' )
 message('\n')
+message('Creating virutal 4C profiles per partition per chromosome...')
+
 
 #################################################################################################################
 ### PARSING THE INPUT ###########################################################################################
@@ -48,7 +50,6 @@ hicReadsFolder <- args$hicReadsFolder
 #################################################################################################################
 
 message( paste0( '> loading R libraries and functions..' ) )
-
 if( !suppressMessages(require( "GenomicRanges", character.only=TRUE ) ) ) stop( "Package not found: GenomicRanges" )
 if( !suppressMessages(require( "zoo", character.only=TRUE ) ) ) stop( "Package not found: zoo" )
 if( !suppressMessages(require( "parallel", character.only=TRUE ) ) ) stop( "Package not found: parallel" )
@@ -60,12 +61,12 @@ if( !suppressMessages(require( "data.table", character.only=TRUE ) ) ) stop( "Pa
 message( paste0( '> loading peakHiCObj..' ) )
 
 #chr <- 'chr1'
-#peakHiCObjFile <-"~/data/Carlo_mESC_peakHiC/peakHiCObj/mm10_mESC_12kbbins.rds" 
+#peakHiCObjFile <-"~/data/Carlo_mESC_peakHiC/peakHiCObj/mm10_mESC_12kbbins_12Mb.rds" 
 chr <- args$chr 
 peakHiCObjFile <- args$peakHiCObj 
+peakHiCObj <- tryCatch({readRDS(peakHiCObjFile)}, error=function(cond){message('\npeakHiC ERROR: path to peakHiCObj incorrect\n')})
 
-peakHiCObj <- readRDS(peakHiCObjFile)
-
+#override input from peakHiCObj if given as command line input
 if(!is.null(wSize)) {peakHiCObj$configOpt$V4C$wSize <- wSize}
 if(!is.null(wSize)) {peakHiCObj$configOpt$peakCalls$wSize <- wSize}
 if(!is.null(vpSize)) {peakHiCObj$configOpt$V4C$vpSize <- vpSize}
@@ -77,30 +78,20 @@ if(!is.null(projectFolder)) {peakHiCObj$configOpt$projectFolder <- projectFolder
 if(!is.null(hicReadsFolder)) {peakHiCObj$configOpt$hicReadsFldr <- hicReadsFolder}
 
 #################################################################################################################
-### Load R functions ############################################################################################
+### Load R functions and files ##################################################################################
 #################################################################################################################
-
+#source the file containing functions
 sourceFile <- paste0(peakHiCObj$configOpt$baseFolder,"R/peakHiC_functions.R")
-source(sourceFile)
+tryCatch({source(sourceFile)}, error=function(cond){message("\npeakHiC ERROR: baseFolder is incorrect, cannot call peakHiC_functions.R\n")} )
 
+#load frag file
+frags <- tryCatch({readRDS(peakHiCObj$configOpt$fragsFile)[[chr]]}, error=function(cond){message('\npeakHiC ERROR: fragsFile is indicated incorrectly\n')})
 
-frags <- readRDS(peakHiCObj$configOpt$fragsFile)[[chr]]
+#create output folder
 rdsFldr <- paste0(peakHiCObj$configOpt$projectFolder,"rds/")
+if(!file.exists(rdsFldr)) { makeRDSFolder(rdsFldr) }
 
-if(!file.exists(rdsFldr)) {
-
-	cmd <- paste0("mkdir ",rdsFldr)
-	system(cmd)
-
-	cmd <- paste0("mkdir ",rdsFldr,"loops/")
-	system(cmd)
-	
-	cmd <- paste0("mkdir ",rdsFldr,"profiles/")
-	system(cmd)
-
-}
-
-
+#main function to be called in parallel 
 getReads.PartID <- function(partID) {
   
   source(sourceFile)
@@ -108,22 +99,23 @@ getReads.PartID <- function(partID) {
 	message( paste0( '> analyzing partition: ' , partID) )	
 
 	tryCatch({
-	
 		vpReads <- getPeakHiCData(partID=partID,frags=frags,peakHiCObj=peakHiCObj)
-		#This file, per partition, has all the V4C's saved of that partition; this is about 130Mb
-		#I do not think there is a way around this
 		saveRDS(vpReads,file=fRDS)
-    
-			}, error=function(e) { message(paste0("generation of V4Cs failed for partID ", partID))}) #conditionMessage()
+			}, error=function(cond) { message(paste0("generation of V4Cs failed for partID ", partID))}) #conditionMessage()
    
 }
 
 
 ###################################################################################
-###Parallel call##################################################################
+###Parallel call###################################################################
 ###################################################################################
-#n.cores <- (detectCores()-2)
-n.cores <- peakHiCObj$configOpt$nCores
+#set n.o. cores
+inputCores <- peakHiCObj$configOpt$nCores
+detectedCores <- detectCores()
+n.cores <- ifelse(inputCores < detectedCores, inputCores, detectedCores)
+if(!is.integer(n.cores)){message("\nincorrect format for number of cores\n")}
+message("\nRunning peakHiC on ", n.cores, " cores.\n")
+
 cl = makeCluster(n.cores, outfile="")
 clusterEvalQ(cl, c(suppressPackageStartupMessages({ 
   library("GenomicRanges") 
@@ -134,17 +126,14 @@ clusterExport(cl=cl, varlist=c("peakHiCObj", "sourceFile", "frags", "rdsFldr"), 
 #clusterEvalQ(cl, sessionInfo())
 
 
-ids <- unique(subChr(peakHiCObj[["vpsGR"]],chr)$partID)
-##### call the function in parallel for each partID and write in rdsFldr'
-#lapply(ids[8], FUN = getReads.PartID)
+#partitions to run the call over
+partIDs <- unique(subChr(peakHiCObj[["vpsGR"]],chr)$partID)
 
-parLapply(cl, ids, fun = getReads.PartID)
+##### call the function in parallel for each partID and write in rdsFldr'
+#lapply(partIDs[1], FUN = getReads.PartID)
+parLapply(cl, partIDs, fun = getReads.PartID)
 
 stopCluster(cl)
 message('>>>> DONE <<<<')
 q("no")
-
-#test <- vpReads_part.1[-length(vpReads_part.1)]
-#ugly <- lapply(test, function(vp){ width(vp$hg38_human_heart_Leducq$LA_P01137$vpGR) })
-#mean(unlist(ugly))
 

@@ -77,7 +77,7 @@ extractReads <- function( fragID, vpS, vpZoom=c(1e6,1e6), reads, frags, k=31, vp
   }
   
   vpCovGR <- vpF[ which( start( vpF ) >= minVPpos & end( vpF ) <= maxVPpos ) ]
-  #######################why do we take 100 here??????  Should be read length??##############################################
+  #######################why take 100 here? Should be read length?##############################################
   vp_cov <- 100*( length( which( vpCovGR$reads > 0 ) ) / length( vpCovGR ) )
   
   nReads <- length( which( vpF$reads > 0 ) )
@@ -179,7 +179,7 @@ combine.reps <- function (data) {
 }
 
 peakAnalysis <- function (data, num.exp = 3, vp.pos, wSize = 21, alphaFDR = 0.1,qWr = 1, minDist = 25e3) {
-  
+  #browser()
   if (num.exp == 0) {
     num.exp = data$num.exp
   }
@@ -194,6 +194,7 @@ peakAnalysis <- function (data, num.exp = 3, vp.pos, wSize = 21, alphaFDR = 0.1,
                                     caTools::runmean, k = wSize, endrule = "mean")
     dbR[, 2:(num.exp + 1) + num.exp] <- apply(db[, 2:(num.exp + 
                                                         1) + num.exp], 2, caTools::runmean, k = 5, endrule = "mean") #why k=5 here?
+
     pseudoCount <- apply(db[, 2:(num.exp + 1)], 2, non.zero.quantile, 
                          probs = 0.05)
     # print(pseudoCount)
@@ -329,7 +330,7 @@ collapseFrags <- function(frags, peakFrags) {
 }
 
 getPartitionPeaks <- function(partID, peakHiCObj, configOpt=NULL, hicCond=NULL, wSize=NULL, qWr=NULL, alphaFDR=NULL,  minDist=NULL, nReps=NULL, writePeaksFile=FALSE) {
-  
+  #browser()
   if(is.null(configOpt)){
     configOpt <- peakHiCObj$configOpt
   }
@@ -359,7 +360,6 @@ getPartitionPeaks <- function(partID, peakHiCObj, configOpt=NULL, hicCond=NULL, 
   }
   
   rdsFldr <- paste0(configOpt$projectFolder,"rds/")
-  #browser()
   profilesFldr <- paste0(rdsFldr,"profiles/")
   loopsFldr <- paste0(rdsFldr,"loops/")
   
@@ -412,6 +412,7 @@ getPartitionPeaks <- function(partID, peakHiCObj, configOpt=NULL, hicCond=NULL, 
         
         vpReads <- readRDS(fRDS)
         
+        #only executes this part if there are no ids found in the partitioned V4C read files, e.g. in vpReads_part1.rds
         if(sum(!ids%in%names(vpReads))>0){
           
           fragsFile <- configOpt$fragsFile
@@ -420,7 +421,7 @@ getPartitionPeaks <- function(partID, peakHiCObj, configOpt=NULL, hicCond=NULL, 
           
         }
         
-      } else {
+      } else { #only executes this if no partitioned V4C files were meade (i.e. callPartitionPeaksbyChr.R, e.g. vpReads_part1.rds)
         
         fragsFile <- configOpt$fragsFile
         frags <- readRDS(fragsFile)[[vpChr]]
@@ -429,7 +430,6 @@ getPartitionPeaks <- function(partID, peakHiCObj, configOpt=NULL, hicCond=NULL, 
       }
       
       for(id in ids) {
-        #consider changing for loop into lapply
         #consider subsetting vpReads before passing to function
         peakRes <- getPeakCPeaksWithReps(vpID=id,vpReads=vpReads, partVPs=partVPs, hicCond=hicCond, wSize=wSize, qWr=qWr, alphaFDR=alphaFDR,  minDist=minDist)
         
@@ -456,23 +456,23 @@ getPartitionPeaks <- function(partID, peakHiCObj, configOpt=NULL, hicCond=NULL, 
   }
 }
 
-getChrPeaks <- function(chr, peakHiCObj, configOpt, hicCond=NULL, wSize=NULL, qWr=NULL, alphaFDR=NULL,  minDist=NULL, nReps=NULL, nThreads=8) {
-  #fix this?? do we need doParallel can we even do this on top of exisiting clusters?
-  suppressPackageStartupMessages(require(doParallel))
-  registerDoParallel(cores=nThreads)
-  
-  vpsGR <- peakHiCObj[["vpsGR"]]
-  ids <- unique(subChr(vpsGR,chr)$partID)
-  
-  foreach(i = 1:length(ids)) %dopar% {
- # for(i in 1:length(ids)){
-    getPartitionPeaks(partID=ids[i], peakHiCObj=peakHiCObj, hicCond=hicCond, wSize=wSize, qWr=qWr, alphaFDR=alphaFDR,  minDist=minDist, nReps=nReps)
-    
-  }
-  
-  stopCluster()
-  
-}
+# getChrPeaks <- function(chr, peakHiCObj, configOpt, hicCond=NULL, wSize=NULL, qWr=NULL, alphaFDR=NULL,  minDist=NULL, nReps=NULL, nThreads=8) {
+#   #do we need doParallel can we even do this on top of exisiting clusters?
+#   suppressPackageStartupMessages(require(doParallel))
+#   registerDoParallel(cores=nThreads)
+#   
+#   vpsGR <- peakHiCObj[["vpsGR"]]
+#   ids <- unique(subChr(vpsGR,chr)$partID)
+#   
+#   foreach(i = 1:length(ids)) %dopar% {
+#  # for(i in 1:length(ids)){
+#     getPartitionPeaks(partID=ids[i], peakHiCObj=peakHiCObj, hicCond=hicCond, wSize=wSize, qWr=qWr, alphaFDR=alphaFDR,  minDist=minDist, nReps=nReps)
+#     
+#   }
+#   
+#   stopCluster()
+#   
+# }
 
 getPeakCPeaksWithReps <- function( vpID, vpReads, partVPs, hicCond="HAP1_WAPL", wSize=31, qWr=1, alphaFDR=0.1,  minDist=30e3 ) {
 
@@ -649,6 +649,9 @@ getPeakHiCData <- function(partID,frags,peakHiCObj,configOpt=NULL,hicCond=NULL,w
     
     reads <- list()
     tracks <- hicTracksByCondition[[hicCond]]
+    if(is.null(tracks)){message("peakHiC ERROR: hicCond from config.yml does not coincide with any condition from design file")
+      q('no')}
+    
     #browser()
     for(trackID in tracks) {
       
@@ -670,13 +673,10 @@ getPeakHiCData <- function(partID,frags,peakHiCObj,configOpt=NULL,hicCond=NULL,w
     }
     }
 
-    #vpReads <- lapply(vps$vpID, vpID.V4C, vps=vps, hicCond=hicCond, tracks=tracks)
-    #names(vpReads) <- vps$vpID 
-
   }
   
-    vpReads$configOpt <- configOpt
-    return(vpReads)
+  vpReads$configOpt <- configOpt
+  return(vpReads)
   
 }
 
@@ -953,17 +953,13 @@ getTADCovbyPartition <- function(partID,loops,peakHiCObj,hicCond="Rao_4DN_GM1287
   
 }
 
-########needs to be changed####################################
 getPartitionReads <- function(partID,trackID,peakHiCObj,configOpt=NULL,nThread=2) {
-
   require(data.table)
   require(GenomicRanges)
   
   if(is.null(configOpt)) {
-    
-    configOpt <- peakHiCObj$configOpt
-    
-  }
+        configOpt <- peakHiCObj$configOpt
+    }
   
   readsFldr <- configOpt$hicReadsFldr
   pairixBinary <- configOpt$pairixBinary
@@ -983,27 +979,26 @@ getPartitionReads <- function(partID,trackID,peakHiCObj,configOpt=NULL,nThread=2
     #browser()
     if (file.exists(pairixFile)&file.exists(pairixBinary)) {
       
-      ######################################here do not write to tmpFile but directly into GRanges################################
-      #However, only 55 MB........; total temp files 3.8Gb, but can equally be removed at the end of section
       dir.create(tempdir(), showWarnings = FALSE)
       
       cmd <- paste0(pairixBinary," ",pairixFile," ",qRegion," > ",tmpFile)
       system(cmd)
+      
       dat <- fread(file=tmpFile,header=FALSE,sep="\t",stringsAsFactors=FALSE,nThread=nThread)
       
       cmd <- paste0("rm -r ",tempdir())
       system(cmd)
-      #############################################################################################################################
-      #we could either save it in a dedicated location and remove right after returning GRanges objecct
-      #we could use R package of pairix thereby circumventing file creation altoghether
-      #we could, per VP, query the pairix file to obtain reads as opposed to using GRanges (derived from intermediate file)
+
+      #Now we save reads in a dedicated location and remove right after returning GRanges object
+      #we could use R package of pairix thereby circumventing file creation altoghether:
+      #query per VP the pairix file to obtain reads as opposed to using intermediate parition GR file
       PE1 <- GRanges(seqnames=dat$V2,IRanges(dat$V3,dat$V3))
       PE2 <- GRanges(seqnames=dat$V4,IRanges(dat$V5,dat$V5))
       out <- list(PE1=PE1,PE2=PE2)
       
-    }
+    } else{message('\npeakHiC WARNING: pairix location ',pairixBinary,' or reads file ',pairixFile,' not found.\n')}
     
-  }
+  } else{message('\npeakHiC WARNING: partition ',partID, ' not mentioned in peakHiCObj.\n')}
   
   return(out)
   
@@ -1776,7 +1771,7 @@ combine.experiments <- function( data, num.exp = 0, vp.pos ){
   data.m <- data[[1]]
   #browser()
   for( i in 2:num.exp ){
-    data.m <- merge(data.m, data[[i]], by=1)
+    data.m <- base::merge(data.m, data[[i]], by=1)
   }
   #create the background model for the upstream regions
   data.bg <- data.m
@@ -1838,3 +1833,12 @@ get.single.background <- function(data, num.exp = 1, vp.pos) {
   return(cbind(data, data.bg[, -1]))
   
 }
+
+makeRDSFolder <- function(rdsFldr){
+  dir.create(rdsFldr)
+  dir.create(paste0(rdsFldr,"loops/"))
+  dir.create(paste0(rdsFldr,"profiles/"))
+  message("\nproject folder created at ", rdsFldr,"\n")
+}
+
+

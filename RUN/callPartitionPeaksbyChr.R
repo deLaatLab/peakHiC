@@ -3,6 +3,7 @@ message( '######################################################################
 message( '# peakHi-C - Copyright (C) 2018 Geert Geeven and Valerio Bianchi - Hubrecht Institute #' )
 message( '#######################################################################################' )
 message('\n')
+message('Calling loops with peakHiC...\n')
 
 #################################################################################################################
 ### DEFINE INPUT ARGS ###########################################################################################
@@ -36,6 +37,8 @@ parser$add_argument('-hicReadsFolder', type='character', help='path to the folde
 
 args <- parser$parse_args()
 
+#chr <- 'chr1'
+#peakHiCObjFile <-"~/data/Carlo_mESC_peakHiC/peakHiCObj/mm10_mESC_12kbbins_12Mb.rds" 
 chr <- args$chr
 peakHiCObjFile <- args$peakHiCObj
 
@@ -61,7 +64,7 @@ if( !suppressMessages(require( "GenomicRanges", character.only=TRUE ) ) ) stop( 
 if( !suppressMessages(require( "zoo", character.only=TRUE ) ) ) stop( "Package not found: zoo" )
 #if( !suppressMessages(require( "peakC", character.only=TRUE ) ) ) stop( "Package not found: peakC" )
 if( !suppressMessages(require( "data.table", character.only=TRUE ) ) ) stop( "Package not found: data.table" )
-if( !suppressMessages(require( "isotone", character.only=TRUE ) ) ) stop( "Package not found: data.table" )
+if( !suppressMessages(require( "isotone", character.only=TRUE ) ) ) stop( "Package not found: isotone" )
 
 
 #################################################################################################################
@@ -103,16 +106,10 @@ source(sourceFile)
 frags <- readRDS(peakHiCObj$configOpt$fragsFile)[[chr]]
 
 vpsGR <- peakHiCObj[["vpsGR"]]
-part.ids <- unique(subChr(vpsGR,chr)$partID)
+partIDs <- unique(subChr(vpsGR,chr)$partID)
 
 rdsFldr <- paste0(peakHiCObj$configOpt$projectFolder,"rds/")
-
-if(!file.exists(rdsFldr)) {
-  
-  dir.create(rdsFldr)
-  
-}
-
+if(!file.exists(rdsFldr)) { makeRDSFolder(rdsFldr) }
 
 
 getLoops.partID <- function(partID) {
@@ -122,7 +119,7 @@ getLoops.partID <- function(partID) {
   
   if(file.exists(fRDS)){
     
-    message( paste0( '> calling peaks with peakHiC in partition ..' , partID) )	
+    message( paste0( '> calling peaks with peakHiC in partition ' , partID) )	
     
     tryCatch({
       
@@ -138,10 +135,13 @@ getLoops.partID <- function(partID) {
 ###################################################################################
 ###Parallel calll##################################################################
 ###################################################################################
-#n.cores <- (detectCores()-2)
-n.cores <- peakHiCObj$configOpt$nCores
-cl = makeCluster(n.cores, outfile="")
+inputCores <- peakHiCObj$configOpt$nCores
+detectedCores <- detectCores()
+n.cores <- ifelse(inputCores < detectedCores, inputCores, detectedCores)
+if(!is.integer(n.cores)){message("\nincorrect format for number of cores\n")}
+message("\nRunning peakHiC on ", n.cores, " cores.\n")
 
+cl = makeCluster(n.cores, outfile="")
 clusterEvalQ(cl, c(suppressPackageStartupMessages({ 
   library("GenomicRanges") 
   library("data.table") 
@@ -152,9 +152,9 @@ clusterExport(cl=cl, varlist=c("peakHiCObj", "sourceFile", "frags", "rdsFldr"), 
 #clusterEvalQ(cl, sessionInfo())
 
 
-##### call the function in parallel for each partID and write in rdsFldr'
-#lapply(ids, FUN = getLoops.partID)
-parLapply(cl, part.ids, fun = getLoops.partID)
+##### call the function in parallel for each partID and write in rdsFldr
+#lapply(partIDs[3], FUN = getLoops.partID)
+parLapply(cl, partIDs, fun = getLoops.partID)
 stopCluster(cl)
 
 message('>>>> DONE <<<<')

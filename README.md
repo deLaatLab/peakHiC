@@ -16,13 +16,14 @@ Valerio Bianchi, Geert Geeven, Nathan Tucker, Catharina R.E. Hilvering, Amelia W
   - argparse
   - config
   - zoo
-  - isotone
   - data.table
-  - doParallel
+  - isotone (optional install)
 - The following R packages available from Bioconductor:
   - GenomicRanges
   - BSgenome of interest (e.g. BSgenome.Hsapiens.UCSC.hg38)
-- The peakC package available from https://github.com/deWitLab/peakC/.
+- The peakC package available from https://github.com/deWitLab/peakC/. (optional install)
+
+One can use the peak_environment.yml conda setup as described in the initial comments of the full_run.sh file.
 
 ## Installation
 
@@ -32,9 +33,7 @@ First choose a folder where to install the pipeline. The R scripts will search f
 git clone https://github.com/deLaatLab/peakHiC.git
 ```
 
-Another path required to setup is the location of the pairix binary. peakHiC uses the 4DN-DCIC tool pairix (see **Prerequisites**) to read HiC data in the pairs format. Below we explain how to configure peakHiC to locate this tool. Please make sure this tool is installed before proceding to the next steps. After installing the pairix tool and the necessary R packages from CRAN and Bioconductor, peakHiC installation should take less than one minute. 
-
-Alternatively, one can use a conda setup as described in the initial comments of the full_run.sh file.
+When not using conda, another path required to setup is the location of the pairix binary. peakHiC uses the 4DN-DCIC tool pairix (see **Prerequisites**) to read HiC data in the pairs format. Below we explain how to configure peakHiC to locate this tool. Please make sure this tool is installed before proceding to the next steps. After installing the pairix tool and the necessary R packages from CRAN and Bioconductor, peakHiC installation should take less than one minute. 
 
 ## Configure peakHiC to use example data
 
@@ -54,7 +53,7 @@ To run peakHiC on a different dataset, adapt the config.yml file and supply the 
 
 ## Run the pipeline
 
-To run the pipeline, one could either inspect and run the full_run.sh or, alternatively, manually execute the steps as described below:
+To run the pipeline, one could either inspect and adapt the full_run.sh or, alternatively, manually execute the steps as described below:
 
 Navigate in a terminal to the peakHiC _RUN_ folder, so in this example **/home/geert/localdev/github/peakHiC/RUN/** and run the following commands:
 
