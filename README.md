@@ -34,6 +34,8 @@ git clone https://github.com/deLaatLab/peakHiC.git
 
 Another path required to setup is the location of the pairix binary. peakHiC uses the 4DN-DCIC tool pairix (see **Prerequisites**) to read HiC data in the pairs format. Below we explain how to configure peakHiC to locate this tool. Please make sure this tool is installed before proceding to the next steps. After installing the pairix tool and the necessary R packages from CRAN and Bioconductor, peakHiC installation should take less than one minute. 
 
+Alternatively, one can use a conda setup as described in the initial comments of the full_run.sh file.
+
 ## Configure peakHiC to use example data
 
 Example pairix files for a ~2Mb region on chromosome 1, from the GM12878 HiC dataset published by Rao _et al._ (2014) doi:10.1016/j.cell.2014.11.021 is included to test the peakHiC pipeline. pairix files for other Hi-C datasets are available through the 4DN data portal at https://data.4dnucleome.org/. Run the following commands in the R console to setup peakHiC to use the example data:
@@ -48,9 +50,13 @@ initExampleData(baseFolder=baseFolder,pairixBinary)
 
 Please be aware that you need to update the paths in the R code above to point to files and folders on your local machine.
 
+To run peakHiC on a different dataset, adapt the config.yml file and supply the viewpoints of interest and then run the commands commented at the end of the config.yml file.
+
 ## Run the pipeline
 
-Now navigate in a terminal to the peakHiC _RUN_ folder, so in this example **/home/geert/localdev/github/peakHiC/RUN/** and run the following commands:
+To run the pipeline, one could either inspect and run the full_run.sh or, alternatively, manually execute the steps as described below:
+
+Navigate in a terminal to the peakHiC _RUN_ folder, so in this example **/home/geert/localdev/github/peakHiC/RUN/** and run the following commands:
 
 ```
 Rscript createPartitionV4CsByChr.R -chr chr1 -peakHiCObj /home/geert/localdev/github/peakHiC/DATA/example_data/hg38_4DN_Rao_GM12878_peakHiC_example_peakHiCObj.rds
