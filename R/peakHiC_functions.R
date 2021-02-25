@@ -1045,7 +1045,7 @@ getV4CData <- function(vpID,peakHiCObj,configOpt=NULL,wSize=21,alphaFDR=0.1,qWr=
     
   } else {
     
-    frags <- readRDS(fragsFile)[[vpChr]]
+    frags <- tryCatch(readRDS(fragsFile)[[vpChr]], error=function(cond){message("\npeakHiC ERROR: Wrong RE fragment file format: fragments should be a I/GRanges object in a list per chromsome.\n")})
     vpReads <- getPeakHiCData(partID=partID,frags=frags,peakHiCObj=peakHiCObj)
     
     if(storeVPReads) {
