@@ -1835,7 +1835,7 @@ get.single.background <- function(data, num.exp = 1, vp.pos) {
 }
 
 makeRDSFolder <- function(rdsFldr){
-  dir.create(rdsFldr)
+  dir.create(rdsFldr, recursive = TRUE)
   dir.create(paste0(rdsFldr,"loops/"))
   dir.create(paste0(rdsFldr,"profiles/"))
   message("\nproject folder created at ", rdsFldr,"\n")

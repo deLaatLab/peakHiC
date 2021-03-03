@@ -65,6 +65,7 @@ if( !suppressMessages(require( "zoo", character.only=TRUE ) ) ) stop( "Package n
 #if( !suppressMessages(require( "peakC", character.only=TRUE ) ) ) stop( "Package not found: peakC" )
 if( !suppressMessages(require( "data.table", character.only=TRUE ) ) ) stop( "Package not found: data.table" )
 if( !suppressMessages(require( "isotone", character.only=TRUE ) ) ) stop( "Package not found: isotone" )
+if( !suppressMessages(require( "caTools", character.only=TRUE ) ) ) stop( "Package not found: isotone" )
 
 
 #################################################################################################################
@@ -126,7 +127,7 @@ getLoops.partID <- function(partID) {
       getPartitionPeaks(partID=partID,peakHiCObj=peakHiCObj,writePeaksFile=TRUE)
       return()
       
-    }, error=function(e) { message(conditionMessage(paste0("peak calling failed for partID ", partID))) })
+    }, error=function(e) { message(paste0("peak calling failed for partID ", partID)) })
   }
 }
 

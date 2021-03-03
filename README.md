@@ -17,6 +17,7 @@ Valerio Bianchi, Geert Geeven, Nathan Tucker, Catharina R.E. Hilvering, Amelia W
   - config
   - zoo
   - data.table
+  - caTools
   - isotone (optional install)
 - The following R packages available from Bioconductor:
   - GenomicRanges
