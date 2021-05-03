@@ -60,8 +60,8 @@ if( !suppressMessages(require( "data.table", character.only=TRUE ) ) ) stop( "Pa
 #################################################################################################################
 message( paste0( '> loading peakHiCObj..' ) )
 
-#chr <- 'chr1'
-#peakHiCObjFile <-"~/data/Carlo_mESC_peakHiC/peakHiCObj/mm10_mESC_12kbbins_12Mb.rds" 
+#chr <- 'chr5'
+#peakHiCObjFile <-"~/data/Leducq/peakHiCObj/hg38_Leducq_LA_LV_12kbbins_chr5.rds" 
 chr <- args$chr 
 peakHiCObjFile <- args$peakHiCObj 
 peakHiCObj <- tryCatch({readRDS(peakHiCObjFile)}, error=function(cond){message('\npeakHiC ERROR: path to peakHiCObj incorrect\n')})
@@ -128,6 +128,7 @@ clusterExport(cl=cl, varlist=c("peakHiCObj", "sourceFile", "frags", "rdsFldr"), 
 
 #partitions to run the call over
 partIDs <- unique(subChr(peakHiCObj[["vpsGR"]],chr)$partID)
+if(is.null(partIDs)){print("ERROR, incorrectly incoorporated viewpoints into peakHiCObj")}
 
 ##### call the function in parallel for each partID and write in rdsFldr'
 #lapply(partIDs[1], FUN = getReads.PartID)

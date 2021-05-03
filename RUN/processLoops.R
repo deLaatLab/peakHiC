@@ -108,7 +108,7 @@ getLoopCovbyChr(chr=chr,loops=loops,peakHiCObj=peakHiCObj,anchorSize=anchorSize,
 
 loopCovs <- as.data.frame(fread(file=tmpFile,sep="\t",header=TRUE,stringsAsFactors=FALSE),stringsAsFactors=FALSE)
 loopCovs[[hicCond]] <- apply(loopCovs[,tracks],1,sum)
-loopCovs[[paste0(hicCond,".covQ")]] <- 1:nrow(loopCovs)/nrow(loopCovs)
+loopCovs[[paste0(hicCond,".covQ")]] <- rank(loopCovs)/nrow(loopCovs) #!!!!!!!!!!!! CovQ  -- only works if we sorted tmpfile by sum of cov .. which I dont think we did...
 loopCovs <- normalizeLoopCov(loops=loopCovs,hicCond=hicCond)
 
 keepCols <- setdiff(colnames(loopCovs),tracks)

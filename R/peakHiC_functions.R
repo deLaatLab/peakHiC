@@ -1099,8 +1099,7 @@ getOvLoops <- function(vpIDs,vpsGR,loops) {
 createConfig <- function(confFile) {
   
   if( !suppressMessages(require( "config", character.only=TRUE ) ) ) stop( "Package not found: config" )
-  
-  configOpt <- config::get(file=confFile)
+  configOpt <- suppressWarnings(config::get(file=confFile))
   configOpt$confFile <- attr(configOpt,"file")
   
   return(configOpt)
@@ -1171,10 +1170,12 @@ createVPs <- function(vpData, peakHiCObj, fragsFile=NULL) {
     vpsGR$partID <- "no.part"
     vpsGR$partID[distMap@from] <- partGR$partID[distMap@to]
     vpsGR <- sort(vpsGR[vpsGR$partID!="no.part"])
-    
+
     fragsList <- readRDS(fragsFile)
     chrs <- intersect(names(fragsList),as.vector(seqnames(vpsGR)))
-    
+    if(length(chrs)==0){message(paste0("\npeakHiC ERROR: Fragments File is incorrectly formatted (should be a list of GRanges per chromosome)",
+    " or it does not contain any of the chromosomes specified in the viewpoints (VP) file.\n"))}
+      
     nextChr <- chrs[1]
     nextFrags <- fragsList[[nextChr]]
     nextVPs <- subChr(gR=vpsGR,chr=nextChr)
@@ -1668,7 +1669,7 @@ initExampleData <- function(baseFolder, pairixBinary) {
 
 peakHiCConf <- function(confFile){
   library(GenomicRanges)
-  
+  #browser()
   configOpt <- createConfig(confFile=confFile)
   designDF <- readHiCDesign(designFile=configOpt$hic$designFile)
   partGR <- readRDS(configOpt$genomePartition$partitionGR)
@@ -1687,8 +1688,8 @@ peakHiCConf <- function(confFile){
   
   saveRDS(peakHiCObj,file=peakHiCObj$configOpt$peakHiCObj)
   
-  message("PeakHiC configuration was read and results were stored in this RDS file :")
-  message(peakHiCObj$configOpt$peakHiCObj)
+  message("\nPeakHiC configuration was read and results were stored in this RDS file :")
+  message(peakHiCObj$configOpt$peakHiCObj,"\n")
   
 }
 
