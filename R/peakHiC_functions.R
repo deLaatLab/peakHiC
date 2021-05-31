@@ -1746,7 +1746,7 @@ exportLoops <- function(peakHiCObj,loopFile=NULL,makeNR=TRUE) {
   
   if(!is.null(loopDF$NR.binID) & makeNR) {
     
-    loopDF <- loopDF[order(loopDF[[paste0(peakHiCObj$configOpt$hicCond,".covQ.norm")]],decreasing=TRUE),]
+    loopDF <- loopDF[order(loopDF[["covQ.norm"]],decreasing=TRUE),]
     loopDF <- loopDF[!duplicated(as.vector(loopDF$NR.binID)),]
     lxPos <- pmin(loopDF$vp_X1,loopDF$maxV4CscorePos)
     lyPos <- pmax(loopDF$vp_X1,loopDF$maxV4CscorePos)
