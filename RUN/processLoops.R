@@ -32,6 +32,9 @@ parser$add_argument('-anchorSize', type='integer', help='size of loop anchors fo
 
 args <- parser$parse_args()
 
+#chr <- 'chr5'
+#peakHiCObjFile <- '/home/ivaandrager/data/Rao_4DN_GM12878/peakHiC/INPUT/peakHiCObj/hg38_GM12878_Rao_peakHiCObj_chr5_12kbbins_10reps.rds'
+#anchorSize <- 10000
 chr <- args$chr
 peakHiCObjFile <- args$peakHiCObj
 
@@ -101,6 +104,7 @@ source(sourceFile)
 #################################################################################################################
 
 loops <- fread(file=loopsFile,sep="\t",header=TRUE,stringsAsFactors=FALSE)
+#loops <- loops[1:1000,]
 
 if(is.null(loops$loopID)) {loops$loopID <- 1:nrow(loops)}
 
@@ -108,7 +112,7 @@ getLoopCovbyChr(chr=chr,loops=loops,peakHiCObj=peakHiCObj,anchorSize=anchorSize,
 
 loopCovs <- as.data.frame(fread(file=tmpFile,sep="\t",header=TRUE,stringsAsFactors=FALSE),stringsAsFactors=FALSE)
 loopCovs[[hicCond]] <- apply(loopCovs[,tracks],1,sum)
-loopCovs[[paste0(hicCond,".covQ")]] <- rank(loopCovs)/nrow(loopCovs) #!!!!!!!!!!!! CovQ  -- only works if we sorted tmpfile by sum of cov .. which I dont think we did...
+loopCovs[[paste0(hicCond,".covQ")]] <- rank(loopCovs[[hicCond]])/nrow(loopCovs)
 loopCovs <- normalizeLoopCov(loops=loopCovs,hicCond=hicCond)
 
 keepCols <- setdiff(colnames(loopCovs),tracks)
