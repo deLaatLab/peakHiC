@@ -865,8 +865,8 @@ getLoopCovbyPartition <- function(partID,loops,peakHiCObj,configOpt=NULL,hicCond
 
 normalizeLoopCov <- function(loops,hicCond="peakHiC",nBins=150) {
   
-  covVar <- paste0(hicCond,".covQ")
-  covNormVar <- paste0(hicCond,".covQ.norm")
+  covVar <- "covQ" #paste0(hicCond,"covQ")
+  covNormVar <- "covQ.norm" #paste0(hicCond,".covQ.norm")
   vp0 <- floor((loops$vp_X1+loops$vp_X2+1)/2)
   
   loops$dist <- abs(vp0-loops$maxV4CscorePos)

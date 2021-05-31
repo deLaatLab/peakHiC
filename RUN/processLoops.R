@@ -111,8 +111,8 @@ if(is.null(loops$loopID)) {loops$loopID <- 1:nrow(loops)}
 getLoopCovbyChr(chr=chr,loops=loops,peakHiCObj=peakHiCObj,anchorSize=anchorSize,loopCovFile=tmpFile,writePeaksFile=TRUE) 
 
 loopCovs <- as.data.frame(fread(file=tmpFile,sep="\t",header=TRUE,stringsAsFactors=FALSE),stringsAsFactors=FALSE)
-loopCovs[[hicCond]] <- apply(loopCovs[,tracks],1,sum)
-loopCovs[[paste0(hicCond,".covQ")]] <- rank(loopCovs[[hicCond]])/nrow(loopCovs)
+loopCovs[['ContactCount']] <- apply(loopCovs[,tracks],1,sum)
+loopCovs[["covQ"]] <- rank(loopCovs[['ContactCount']])/nrow(loopCovs)
 loopCovs <- normalizeLoopCov(loops=loopCovs,hicCond=hicCond)
 
 keepCols <- setdiff(colnames(loopCovs),tracks)
